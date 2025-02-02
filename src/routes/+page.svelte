@@ -258,8 +258,7 @@
                     </div>
                     <div class="flex flex-col items-center lg:mr-auto">
                         <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
-                        <Button variant="outline" class="ml-4 mt-6">Remove Uploaded Data</Button>
-                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+                        <Button variant="outline" class="ml-4 mt-6" onclick={() => {activities.set([]); localStorage.remove('activities'); location.reload()}}>Remove Uploaded Data</Button>                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
                     </div>
                 </div>
             {:else if p === 'calendar'}
