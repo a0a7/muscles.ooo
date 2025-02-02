@@ -271,8 +271,6 @@
                     {activities}
                     {volumeType}
                     {weightUnit}
-                    {totalVolume}
-                    {maxActivation}
                 />
                 {:else if p === 'weights-stats'}
                 <WeightsStatsPage {activities} />
