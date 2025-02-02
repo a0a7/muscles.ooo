@@ -146,7 +146,7 @@
         {:else if p === 'list'}
             <ListPage {workoutActivities} {allActivities} />
         {:else if p === 'weights-volume'}
-            <WeightsVolumePage {workoutActivities} {allActivities} />
+            <WeightsVolumePage {workoutActivities} />
         {:else if p === 'weights-stats'}
             <WeightsStatsPage {workoutActivities} {allActivities} />
         {:else if p === 'cycling-stats'}
