@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { format, subDays, subMonths, subYears, parseISO } from 'date-fns';
   import { Button } from "$lib/components/ui/button";
+	import Label from '$lib/components/ui/label/label.svelte';
 
   export let activities: any[] = [];
   export let volumeType: string = 'weight';
@@ -72,10 +73,11 @@
   $: filterActivities();
 </script>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div class="mb-4">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Time Filter</label>
-    <div class="flex space-x-2">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 ">
+  <h2 class="text-3xl font-bold mx-auto mt-8 text-center">Relative Muscle Activation</h2>
+  <div class="mb-4 mt-8 w-full flex flex-col items-center justify-center gap-2">
+    <Label for="timeFilter">Filter by Time</Label>
+    <div class="flex space-x-2" id="timeFilter">
       <Button onclick={() => { timeFilter = 'allTime'; filterActivities(); }} variant={timeFilter==='allTime' ? "default" : "outline"} >All Time</Button>
       <Button onclick={() => { timeFilter = 'last7days'; filterActivities(); }} variant={timeFilter === 'last7days' ? "default" : "outline"}>Last 7 Days</Button>
       <Button onclick={() => { timeFilter = 'last30days'; filterActivities(); }} variant={timeFilter === 'last30days' ? "default" : "outline"}>Last 30 Days</Button>
