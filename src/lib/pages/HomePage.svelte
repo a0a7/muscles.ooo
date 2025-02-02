@@ -1,4 +1,3 @@
 <script lang="ts">
-    export let workoutActivities: any[] = [];
-    export let allActivities: any[] = [];
+    export let activities: any[] = [];
 </script>

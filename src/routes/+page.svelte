@@ -223,66 +223,67 @@
                 </Breadcrumb.List>
             </Breadcrumb.Root>
         </header>
-        
-        {#if !fileUploaded}
-            <div class="flex flex-col items-center mt-16">
-                <h2 class="font-bold text-3xl">Upload Data</h2>
-                <form class="flex flex-col gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
-                    <Label for="fileUpload">json</Label>
-                    <Input id="fileUpload" type="file" onchange={handleFileChange} />
-                    <Button type="submit" class="mx-auto px-8 mt-4">Upload File</Button>
-                </form>
-                <p class="max-w-80 pt-6 text-center">To use this website you need to export your Garmin activities using the Garmin Workout Downloader <a class="link" href="https://chromewebstore.google.com/detail/garmin-workout-downloader/hpimimpdkghmejbcldfccdbaebjifnkk" target="_blank" rel="noopener noreferrer">Chrome</a> or <a class="link" href="https://addons.mozilla.org/en-US/firefox/addon/garmin-workout-downloader/" target="_blank" rel="noopener noreferrer">Firefox</a> extension and upload the resultant file here.</p>
-            </div>
-        {:else}
-        {#if p === 'home'}
-            <HomePage {activities} />
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-4">
-                <div class="flex flex-col items-center lg:ml-auto">
-                    <h2 class="font-bold text-3xl">Export Processed Data</h2>
-                    <div class="mt-6 flex gap-2">
-                        <Button class="" variant="outline" onclick={() => { const csv = Papa.unparse(activities); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.csv'); }}><Download /> CSV</Button>
-                        <Button class="" variant="outline" onclick={() => { const tsv = Papa.unparse(activities, { delimiter: '\t' }); const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.tsv'); }}><Download /> TSV</Button>
-                        <Button class="" variant="outline" onclick={() => { const yaml = YAML.stringify(activities); const blob = new Blob([yaml], { type: 'text/yaml;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.yaml'); }}><Download /> YAML</Button>
-                        <Button class="" variant="outline" onclick={() => { const json = JSON.stringify(activities, null, 2); const blob = new Blob([json], { type: 'application/json;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.json'); }}><Download /> JSON</Button>
-                    </div>
-                    <p class="max-w-80 pt-6 text-center">Export your activities in a convenient format for use somewhere else</p>
-                </div>
-                <div class="flex flex-col items-center">
-                    <h2 class="font-bold text-3xl">Upload More Data</h2>
-                    <form class="flex gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
+        <div id="content">
+            {#if !fileUploaded}
+                <div class="flex flex-col items-center mt-16">
+                    <h2 class="font-bold text-3xl">Upload Data</h2>
+                    <form class="flex flex-col gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
+                        <Label for="fileUpload">json</Label>
                         <Input id="fileUpload" type="file" onchange={handleFileChange} />
-                        <Button type="submit" variant="outline" class="ml-4">Upload File</Button>
+                        <Button type="submit" class="mx-auto px-8 mt-4">Upload File</Button>
                     </form>
-                    <p class="max-w-80 pt-6 text-center">You can upload another json file to update the list of activities</p>
+                    <p class="max-w-80 pt-6 text-center">To use this website you need to export your Garmin activities using the Garmin Workout Downloader <a class="link" href="https://chromewebstore.google.com/detail/garmin-workout-downloader/hpimimpdkghmejbcldfccdbaebjifnkk" target="_blank" rel="noopener noreferrer">Chrome</a> or <a class="link" href="https://addons.mozilla.org/en-US/firefox/addon/garmin-workout-downloader/" target="_blank" rel="noopener noreferrer">Firefox</a> extension and upload the resultant file here.</p>
                 </div>
-                <div class="flex flex-col items-center lg:mr-auto">
-                    <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
-                    <Button variant="outline" class="ml-4 mt-6">Remove Uploaded Data</Button>
-                    <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+            {:else}
+            {#if p === 'home'}
+                <HomePage {activities} />
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-4">
+                    <div class="flex flex-col items-center lg:ml-auto">
+                        <h2 class="font-bold text-3xl">Export Processed Data</h2>
+                        <div class="mt-6 flex gap-2">
+                            <Button class="" variant="outline" onclick={() => { const csv = Papa.unparse(activities); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.csv'); }}><Download /> CSV</Button>
+                            <Button class="" variant="outline" onclick={() => { const tsv = Papa.unparse(activities, { delimiter: '\t' }); const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.tsv'); }}><Download /> TSV</Button>
+                            <Button class="" variant="outline" onclick={() => { const yaml = YAML.stringify(activities); const blob = new Blob([yaml], { type: 'text/yaml;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.yaml'); }}><Download /> YAML</Button>
+                            <Button class="" variant="outline" onclick={() => { const json = JSON.stringify(activities, null, 2); const blob = new Blob([json], { type: 'application/json;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.json'); }}><Download /> JSON</Button>
+                        </div>
+                        <p class="max-w-80 pt-6 text-center">Export your activities in a convenient format for use somewhere else</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <h2 class="font-bold text-3xl">Upload More Data</h2>
+                        <form class="flex gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
+                            <Input id="fileUpload" type="file" onchange={handleFileChange} />
+                            <Button type="submit" variant="outline" class="ml-4">Upload File</Button>
+                        </form>
+                        <p class="max-w-80 pt-6 text-center">You can upload another json file to update the list of activities</p>
+                    </div>
+                    <div class="flex flex-col items-center lg:mr-auto">
+                        <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
+                        <Button variant="outline" class="ml-4 mt-6">Remove Uploaded Data</Button>
+                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+                    </div>
                 </div>
-            </div>
-        {:else if p === 'calendar'}
-            <CalendarPage {activities} />
-        {:else if p === 'list'}
-            <ListPage {activities} />
-        {:else if p === 'weights-volume'}
-            <WeightsVolumePage
-                {activities}
-                {volumeType}
-                {weightUnit}
-                {totalVolume}
-                {maxActivation}
-            />
-            {:else if p === 'weights-stats'}
-            <WeightsStatsPage {activities} />
-        {:else if p === 'cycling-stats'}
-            <CyclingStatsPage {activities} />
-        {:else if p === 'cycling-map'}
-            <CyclingMapPage {activities} />
-        {:else}
-            <p>Page not found</p>
+            {:else if p === 'calendar'}
+                <CalendarPage {activities} />
+            {:else if p === 'list'}
+                <ListPage {activities} />
+            {:else if p === 'weights-volume'}
+                <WeightsVolumePage
+                    {activities}
+                    {volumeType}
+                    {weightUnit}
+                    {totalVolume}
+                    {maxActivation}
+                />
+                {:else if p === 'weights-stats'}
+                <WeightsStatsPage {activities} />
+            {:else if p === 'cycling-stats'}
+                <CyclingStatsPage {activities} />
+            {:else if p === 'cycling-map'}
+                <CyclingMapPage {activities} />
+            {:else}
+                <p>Page not found</p>
+            {/if}
         {/if}
-    {/if}
+    </div>
     </Sidebar.Inset>
 </Sidebar.Provider>
