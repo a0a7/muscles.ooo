@@ -17,13 +17,48 @@
     import Button from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card/';
 	import HomePage from '$lib/pages/HomePage.svelte';
+	import { Download } from 'lucide-svelte';
+    import fileSaver from 'file-saver';
+    import Papa from 'papaparse';
+    import YAML from 'yaml';
 
-    let p: string | null = null;
+    let p: string | null = $state(null);
     let file: File | null = null;
     let fileContent: string | null = null;
-    let fileUploaded: boolean = false;
-    let workoutActivities: any[] = [];
-    let allActivities: any[] = [];
+    let fileUploaded: boolean = $state(false);
+    let allActivities: any[] = $state([]);
+    let volumeType: string = $state('weight');
+    let totalVolume: number = $state(0);
+    let maxActivation = $state(0);
+    let exerciseMuscleMap: { [key: string]: { primaryMuscles: string[], secondaryMuscles: string[] } } = $state({});
+    let weightUnit: string = $state('kg');
+    let activities: any = $state([]);
+
+    const allMuscles = [
+        "ABDUCTORS",
+        "ABS",
+        "ADDUCTORS",
+        "BICEPS",
+        "CALVES",
+        "CHEST",
+        "FOREARM",
+        "GLUTES",
+        "HAMSTRINGS",
+        "HIPS",
+        "LATS",
+        "LOWER_BACK",
+        "NECK",
+        "OBLIQUES",
+        "QUADS",
+        "SHOULDERS",
+        "TRAPS",
+        "TRICEPS",
+    ];
+
+    let muscleActivation = $state(allMuscles.reduce((acc, muscle) => {
+        acc[muscle] = 0;
+        return acc;
+    }, {} as { [key: string]: number }));
 
     const queryParam = derived(page, $page => {
         const urlParams = new URLSearchParams($page.url.search);
@@ -35,12 +70,10 @@
             p = value;
         });
 
-        const storedWorkoutActivities = localStorage.getItem('workoutActivities');
-        const storedAllActivities = localStorage.getItem('allActivities');
-        if (storedWorkoutActivities && storedAllActivities) {
+        const cachedActivities = localStorage.getItem('activities');
+        if (cachedActivities && cachedActivities.length > 2) {
+            activities = JSON.parse(cachedActivities);
             fileUploaded = true;
-            workoutActivities = JSON.parse(storedWorkoutActivities);
-            allActivities = JSON.parse(storedAllActivities);    
         }
 
         return () => unsubscribe();
@@ -86,22 +119,94 @@
 
     function parseFileContent(content: string) {
         const data = JSON.parse(content);
-        const workoutActivitiesSet = new Set();
         const allActivitiesSet = new Set();
 
         data.forEach((activity: any) => {
             if (!allActivitiesSet.has(activity.activityId)) {
                 allActivitiesSet.add(activity.activityId);
                 allActivities.push(activity);
-                if (activity.activityType.typeKey === 'strength_training') {
-                    workoutActivities.push(activity);
-                }
             }
         });
-
-        localStorage.setItem('workoutActivities', JSON.stringify(workoutActivities));
-        localStorage.setItem('allActivities', JSON.stringify(allActivities));
+        processMuscleInformation();
     }
+
+    async function fetchExerciseMuscleMap() {
+        const response = await fetch('exercise-muscle-groups.json');
+        exerciseMuscleMap = await response.json();
+    }
+
+    async function processMuscleInformation() {
+    await fetchExerciseMuscleMap();
+
+    activities = allActivities.map(activity => {
+        if (activity.activityType.typeKey === 'strength_training') {
+            const activityExerciseSets: { name: string; reps: number; weight: number; time: string }[] = [];
+            if (Array.isArray(activity.fullExerciseSets)) {
+                activity.fullExerciseSets.forEach((exerciseSet: any) => {
+                    exerciseSet.exercises.forEach((exercise: any) => {
+                        const exerciseData = {
+                            name: exercise.name,
+                            reps: exerciseSet.repetitionCount,
+                            weight: exerciseSet.weight || 0,
+                            time: exerciseSet.startTime
+                        };
+                        activityExerciseSets.push(exerciseData);
+                    });
+                });
+            }
+            return {
+                id: activity.activityId,
+                name: activity.activityName,
+                startTime: activity.startTimeLocal,
+                time: activity.duration,
+                movingTime: activity.movingDuration,
+                exerciseSets: activityExerciseSets,
+                totalReps: activity.totalReps,
+                totalSets: activity.totalSets,
+                calories: activity.calories,
+                sweat: activity.waterEstimated,
+                avgHR: activity.averageHR,
+                maxHR: activity.maxHR,
+                zonesHR: {
+                    z0: activity.hrTimeInZone_0,
+                    z1: activity.hrTimeInZone_1,
+                    z2: activity.hrTimeInZone_2,
+                    z3: activity.hrTimeInZone_3,
+                    z4: activity.hrTimeInZone_4,
+                    z5: activity.hrTimeInZone_5,
+                },
+            };
+        } else {
+            return {
+                id: activity.activityId,
+                name: activity.activityName,
+                type: activity.activityType.typeKey,
+                startTime: activity.startTimeLocal,
+                time: activity.duration,
+                movingTime: activity.movingDuration,
+                dist: activity.distance,
+                avgSpeed: activity.averageSpeed,
+                elevationGain: activity.elevationGain,
+                calories: activity.calories,
+                sweat: activity.waterEstimated,
+                avgHR: activity.averageHR,
+                maxHR: activity.maxHR,
+                zonesHR: {
+                    z0: activity.hrTimeInZone_0,
+                    z1: activity.hrTimeInZone_1,
+                    z2: activity.hrTimeInZone_2,
+                    z3: activity.hrTimeInZone_3,
+                    z4: activity.hrTimeInZone_4,
+                    z5: activity.hrTimeInZone_5,
+                },
+            };
+        }
+    });
+
+    maxActivation = Math.max(...Object.values(muscleActivation));
+    localStorage.setItem('activities', JSON.stringify(activities));
+    console.log(activities);
+}
 </script>
 
 <Sidebar.Provider>
@@ -122,7 +227,7 @@
         {#if !fileUploaded}
             <div class="flex flex-col items-center mt-16">
                 <h2 class="font-bold text-3xl">Upload Data</h2>
-                <form class="flex flex-col gap-1 max-w-sm mt-6" on:submit={handleFileUpload}>
+                <form class="flex flex-col gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
                     <Label for="fileUpload">json</Label>
                     <Input id="fileUpload" type="file" onchange={handleFileChange} />
                     <Button type="submit" class="mx-auto px-8 mt-4">Upload File</Button>
@@ -131,28 +236,50 @@
             </div>
         {:else}
         {#if p === 'home'}
-            <HomePage {workoutActivities} {allActivities} />
-            <div class="flex flex-col items-center mt-16">
-                <h2 class="font-bold text-3xl">Upload More Data</h2>
-                <form class="flex gap-1 max-w-sm mt-6" on:submit={handleFileUpload}>
-                    <Input id="fileUpload" type="file" onchange={handleFileChange} />
-                    <Button type="submit" class="ml-4">Upload File</Button>
-                </form>
-                <p class="max-w-80 pt-6 text-center">You can upload another json file to update the list of activities</p>
+            <HomePage {activities} />
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-4">
+                <div class="flex flex-col items-center lg:ml-auto">
+                    <h2 class="font-bold text-3xl">Export Processed Data</h2>
+                    <div class="mt-6 flex gap-2">
+                        <Button class="" variant="outline" onclick={() => { const csv = Papa.unparse(activities); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.csv'); }}><Download /> CSV</Button>
+                        <Button class="" variant="outline" onclick={() => { const tsv = Papa.unparse(activities, { delimiter: '\t' }); const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.tsv'); }}><Download /> TSV</Button>
+                        <Button class="" variant="outline" onclick={() => { const yaml = YAML.stringify(activities); const blob = new Blob([yaml], { type: 'text/yaml;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.yaml'); }}><Download /> YAML</Button>
+                        <Button class="" variant="outline" onclick={() => { const json = JSON.stringify(activities, null, 2); const blob = new Blob([json], { type: 'application/json;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.json'); }}><Download /> JSON</Button>
+                    </div>
+                    <p class="max-w-80 pt-6 text-center">Export your activities in a convenient format for use somewhere else</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <h2 class="font-bold text-3xl">Upload More Data</h2>
+                    <form class="flex gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
+                        <Input id="fileUpload" type="file" onchange={handleFileChange} />
+                        <Button type="submit" variant="outline" class="ml-4">Upload File</Button>
+                    </form>
+                    <p class="max-w-80 pt-6 text-center">You can upload another json file to update the list of activities</p>
+                </div>
+                <div class="flex flex-col items-center lg:mr-auto">
+                    <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
+                    <Button variant="outline" class="ml-4 mt-6">Remove Uploaded Data</Button>
+                    <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+                </div>
             </div>
-
         {:else if p === 'calendar'}
-            <CalendarPage {workoutActivities} {allActivities} />
+            <CalendarPage {activities} />
         {:else if p === 'list'}
-            <ListPage {workoutActivities} {allActivities} />
+            <ListPage {activities} />
         {:else if p === 'weights-volume'}
-            <WeightsVolumePage {workoutActivities} />
-        {:else if p === 'weights-stats'}
-            <WeightsStatsPage {workoutActivities} {allActivities} />
+            <WeightsVolumePage
+                {activities}
+                {volumeType}
+                {weightUnit}
+                {totalVolume}
+                {maxActivation}
+            />
+            {:else if p === 'weights-stats'}
+            <WeightsStatsPage {activities} />
         {:else if p === 'cycling-stats'}
-            <CyclingStatsPage {workoutActivities} {allActivities} />
+            <CyclingStatsPage {activities} />
         {:else if p === 'cycling-map'}
-            <CyclingMapPage {workoutActivities} {allActivities} />
+            <CyclingMapPage {activities} />
         {:else}
             <p>Page not found</p>
         {/if}
