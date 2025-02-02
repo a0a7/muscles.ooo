@@ -75,4 +75,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  a.link {
+    @apply underline;
+    transition: color 0.1s;
+  }
+  a.link:hover {
+    color: var(--primary);
+  }
 }
