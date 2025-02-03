@@ -1,18 +1,16 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import exerciseMuscleGroups from './exercise-muscle-groups.json';
 
-    export let filteredActivities: any[] = [];
+    export let muscleReps: Record<string, number> = {};
+    export let musclePrimaryReps: Record<string, number> = {};
+    export let muscleSecondaryReps: Record<string, number> = {};
+
+    export let maxActivation = 0;
+    export let totalVolume = 0;
+
 
     let hoveredMuscle: string | null = null;
     let tooltipPosition = { x: 0, y: 0 };
-    let muscleReps: Record<string, number> = {};
-    let musclePrimaryReps: Record<string, number> = {};
-    let muscleSecondaryReps: Record<string, number> = {};
-    let muscleVolume: Record<string, number> = {};
-
-    let maxActivation = 0;
-    let totalVolume = 0;
     let volumeType = "weight";
     let weightUnit = "kg";
 
@@ -37,38 +35,7 @@
         "TRICEPS",
     ];
 
-    function processActivities() {
-        muscleReps = {};
-        musclePrimaryReps = {};
-        muscleSecondaryReps = {};
-        muscleVolume = {};
-        filteredActivities.forEach(activity => {
-            if (activity && activity.exerciseSets && activity.exerciseSets.length > 0) {
-                activity.exerciseSets.forEach((set: any) => { // @ts-ignore
-                        const muscles = exerciseMuscleGroups[set.name];
-                        if (muscles) {
-                          if (set.reps) {
-                            muscles.primaryMuscles.forEach((muscle: string) => {
-                                muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps;
-                                musclePrimaryReps[muscle] = (musclePrimaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
-                            });
-                            muscles.secondaryMuscles.forEach((muscle: string) => {
-                                muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps * 0.5;
-                                muscleSecondaryReps[muscle] = (muscleSecondaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
-                            });
-                          } else {
-                            return;
-                          };
-                        }
-                    });
-            }
-        });
-        maxActivation = Math.max(...Object.values(muscleReps));
-        console.log(muscleReps);
-        totalVolume = Object.values(muscleReps).reduce((a, b) => a + b, 0);
-    }
+
 
     const getColor = (value: number, max: number) => {
         const ratio = (value / max) * 100;
@@ -102,15 +69,6 @@
     const handleMouseOut = (event: MouseEvent | FocusEvent) => {
         hoveredMuscle = null;
     };
-
-    onMount(() => {
-        processActivities();
-    });
-
-    $: { 
-        filteredActivities
-        processActivities();
-    }
 </script>
 
 <div class="relative w-full items-center justify-center">
@@ -253,7 +211,7 @@
 
 {#if hoveredMuscle && tooltipPosition}
     <div
-    class="absolute bg-white bg-opacity-90 p-2 rounded shadow-lg z-50 transform translate-x-2 translate-y-[-110%] text-sm font-medium text-gray-800 whitespace-nowrap"
+    class="absolute bg-white bg-opacity-90 p-2 rounded shadow-lg z-50 transform translate-x-[15%] translate-y-[-150%] text-sm font-medium text-gray-800 whitespace-nowrap"
     style="top: {tooltipPosition.y + 48}px; left: {tooltipPosition.x}px;">
     <h4 class="m-0 mb-1 font-bold">{hoveredMuscle}</h4>
     <p class="m-0">

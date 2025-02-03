@@ -268,7 +268,7 @@
                 </Breadcrumb.List>
             </Breadcrumb.Root>
         </header>
-        <div id="content">
+        <div>
             {#if !fileUploaded}
                 <div class="flex flex-col items-center mt-16">
                     <h2 class="font-bold text-3xl">Upload Data</h2>

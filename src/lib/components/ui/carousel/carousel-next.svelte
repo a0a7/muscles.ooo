@@ -30,8 +30,8 @@
 		className
 	)}
 	disabled={!$canScrollNext}
-	on:click={scrollNext}
-	on:keydown={handleKeyDown}
+	onclick={scrollNext}
+	onkeydown={handleKeyDown}
 	{...$$restProps}
 >
 	<ArrowRight class="h-4 w-4" />
