@@ -47,21 +47,26 @@
                 activity.exerciseSets.forEach((set: any) => { // @ts-ignore
                         const muscles = exerciseMuscleGroups[set.name];
                         if (muscles) {
+                          if (set.reps) {
                             muscles.primaryMuscles.forEach((muscle: string) => {
                                 muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps;
                                 musclePrimaryReps[muscle] = (musclePrimaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight;
+                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
                             });
                             muscles.secondaryMuscles.forEach((muscle: string) => {
                                 muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps * 0.5;
                                 muscleSecondaryReps[muscle] = (muscleSecondaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight;
+                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
                             });
+                          } else {
+                            return;
+                          };
                         }
                     });
             }
         });
         maxActivation = Math.max(...Object.values(muscleReps));
+        console.log(muscleReps);
         totalVolume = Object.values(muscleReps).reduce((a, b) => a + b, 0);
     }
 
