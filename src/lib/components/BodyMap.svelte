@@ -75,7 +75,7 @@
         if (ratio <= 5) {           // Gray < 5%
             return 'rgba(171, 171, 171, 0.5)';
         } else if (ratio <= 75) {   // Yellow (25%) -> Orange (75%)
-            let g = 170 - Math.round(((ratio - 50) / 25) * (255 - 165));
+            let g = (170 - Math.round(((ratio - 50) / 25) * (255 - 165))) * 0.8;
             return `rgba(255, ${Math.min(255, g)}, 0, 0.8)`;
         } else {                    // Orange (75%) -> Red (100%)
             let r = 255 - Math.round(((ratio - 75) / 25) * (255 - 139));
