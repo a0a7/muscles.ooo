@@ -139,6 +139,16 @@
         }
     }
 
+    function flattenActivities(activities: any[]) {
+        return activities.map(activity => {
+            const flattened = { ...activity };
+            if (activity.exerciseSets) {
+                flattened.exerciseSets = activity.exerciseSets.map((set: any) => `${set.name} (${set.reps} reps, ${set.weight} kg)`).join('; ');
+            }
+            return flattened;
+        });
+    }
+
     function parseFileContent(content: string, fileType: string) {
         let data;
         if (fileType === 'application/json') {
@@ -241,6 +251,7 @@
         localStorage.setItem('activities', JSON.stringify(activities));
         console.log(activities);
     }
+
 </script>
 
 <Sidebar.Provider>
@@ -275,12 +286,23 @@
                     <div class="flex flex-col items-center lg:ml-auto">
                         <h2 class="font-bold text-3xl">Export Processed Data</h2>
                         <div class="mt-6 flex gap-2">
-                            <Button class="" variant="outline" onclick={() => { const csv = Papa.unparse(activities); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.csv'); }}><Download /> CSV</Button>
-                            <Button class="" variant="outline" onclick={() => { const tsv = Papa.unparse(activities, { delimiter: '\t' }); const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.tsv'); }}><Download /> TSV</Button>
                             <Button class="" variant="outline" onclick={() => { const yaml = YAML.stringify(activities); const blob = new Blob([yaml], { type: 'text/yaml;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.yaml'); }}><Download /> YAML</Button>
                             <Button class="" variant="outline" onclick={() => { const json = JSON.stringify(activities, null, 2); const blob = new Blob([json], { type: 'application/json;charset=utf-8;' }); fileSaver.saveAs(blob, 'all_activities.json'); }}><Download /> JSON</Button>
-                        </div>
-                        <p class="max-w-80 pt-6 text-center">Export your activities in a convenient format for use somewhere else</p>
+
+                            <Button class="" variant="outline" onclick={() => { 
+                                const flattenedActivities = flattenActivities(activities);
+                                const csv = Papa.unparse(flattenedActivities); 
+                                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); 
+                                fileSaver.saveAs(blob, 'all_activities.csv'); 
+                            }}><Download /> CSV</Button>
+                            <Button class="" variant="outline" onclick={() => { 
+                                const flattenedActivities = flattenActivities(activities);
+                                const tsv = Papa.unparse(flattenedActivities, { delimiter: '\t' }); 
+                                const blob = new Blob([tsv], { type: 'text/tab-separated-values;charset=utf-8;' }); 
+                                fileSaver.saveAs(blob, 'all_activities.tsv'); 
+                            }}><Download /> TSV</Button>
+                            </div>
+                        <p class="max-w-80 pt-6 text-center">Note: CSV & TSV Formats are less precise than JSON & YAML, and don't store data about workout sets & HR zones</p>
                     </div>
                     <div class="flex flex-col items-center">
                         <h2 class="font-bold text-3xl">Upload More Data</h2>
