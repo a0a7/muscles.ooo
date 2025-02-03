@@ -114,6 +114,9 @@
             .body {
               fill: rgba(200, 200, 200, .5);
             }
+            :root.dark .body {
+              fill: rgba(50, 50, 50, .5);
+            }
           </style>
         </defs>
         <g id="Body_Fill" data-name="Body Fill">
