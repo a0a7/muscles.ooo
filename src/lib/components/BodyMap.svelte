@@ -84,16 +84,22 @@
         }
     }
 
-    const handleMouseOver = (event: MouseEvent, muscle: string) => {
+    const handleMouseOver = (event: MouseEvent | FocusEvent, muscle: string) => {
         const container = document.getElementById('content');
         if (container) {
             const rect = container.getBoundingClientRect();
             hoveredMuscle = muscle;
-            tooltipPosition = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            if (event instanceof MouseEvent) {
+                tooltipPosition = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            } else if (event instanceof FocusEvent) {
+                const target = event.target as HTMLElement;
+                const rect = target.getBoundingClientRect();
+                tooltipPosition = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            }
         }
     };
 
-    const handleMouseOut = () => {
+    const handleMouseOut = (event: MouseEvent | FocusEvent) => {
         hoveredMuscle = null;
     };
 
@@ -124,61 +130,61 @@
           <path id="Anterior" class="body" d="M263.15,467.02c-.21-.55-.34-1.12-.37-1.71-4.94-91.98,15.36-184.31-23.79-269.4-.25-.54-.42-1.12-.48-1.71-1.01-11.21,4.21-34.01,8-49.78,1.16-4.82,7.54-5.84,10.18-1.65,9.4,14.93,22.03,31.97,28.38,46.71.08.18.15.37.21.56,4.4,14.15,10.06,25.59,17.3,36.38,8.2,11.13,20.71,23.24,28.48,39.75.17.37.31.75.4,1.15,1.64,6.97,1.87,15.43,5.67,21.66,4.13,6.01,8.08,22.81,16.55,21.04,8.71-1.68,30.66-6.46,26.52-16.23-.72-1.94-2.41-8.98-2.76-11.34-.07-.44-.19-.87-.36-1.28-8.6-20.77-10.62-15.01-25.55-27.22-.2-.16-.38-.33-.56-.51-10.05-10.54-18.61-29.5-22.87-45.31-4.73-18.22-22.94-43.06-32.66-62.6-14.62-30.67-7.44-76.11-43.91-91.62-25.82-10.66-48.66-14.78-38.2-45.77.22-.64.57-1.23,1-1.76,1.58-1.94,2.9-4.09,4-6.39h-56.8c3.3,5.05,9.11,9,8.04,15.61-.9,6.89.58,11.91-1.44,16.76-.4.97-1.13,1.78-2,2.36-47.57,31.64-65.12,17.69-73.57,92.03-.03.29-.09.59-.16.87-7,26.06-30.97,52.13-38.21,76.1-18.89,66.48-35.87,43.31-50.51,77.56-.15.34-.25.71-.33,1.08-.56,2.56-4.01,11.05-3.25,14.81,1.62,6.62,18.76,12.47,28.23,12.64,1.67.03,3.26-.68,4.35-1.94,8.58-9.89,14.61-24.96,16.04-38.05.05-.48.16-.95.33-1.4,7.72-20.23,23.85-31.91,32.41-47.51,6.61-10.55,11.54-25.63,16.83-37.96.16-.38.37-.74.62-1.08,39.2-54.01,28.67-76.51,43.92,6.83.04.23.08.47.09.7.49,7.58-5.87,15.71-8.04,24.32-.04.17-.09.33-.15.5-25.08,66.31-17.3,137.4-15.19,207.91,0,.3,0,.6-.05.9-1.94,13.99.1,29.97-1.91,44.28-.06.41-.16.8-.31,1.19-13.82,36.71-1.28,99.79,3.76,139.14h22.29c-.54-5.97-.88-11.96-.61-17.96,0-.18.02-.36.05-.53,4.43-35.23,11.83-63.71,10.33-105.85-.1-13.35,4.04-24.89,7.6-37.63.07-.24.12-.48.15-.72,6.3-45.05,20.79-88.66,24.79-139.33.24-2.99,2.77-5.43,5.75-5.17,7,.59,4.28,15.38,5.91,22.68,7.58,56.55,17.8,93.59,28.76,143.63.04.2.08.4.1.6,3.32,29.08.55,69.62,7.49,91.3.1.3.23.59.37.87,4.81,9.3,3.87,28.55,2.62,48.1h23.19c5.13-39.81,17.69-103.32,3.33-140.64Z"/>
         </g>
             <g id="Posterior_View_Muscles" data-name="Posterior View Muscles" transform="translate(0, 3)">
-          <g id="Calves" on:mouseover={(e) => handleMouseOver(e, "Calves")} on:mouseout={handleMouseOut}>
+          <g id="Calves" role="button" tabindex="0" on:mouseover={(e) => handleMouseOver(e, "Calves")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Calves")} on:blur={handleMouseOut}>
             <path class="calves" d="M522.19,464.16c-10.64.77-18.8,16.92-17.44,29.44,2.02,15.91,2.72,127.62,23.82,79.43,3.02-13.48,3.42-29.56,7.01-43.68,6.19-18.73,16.37-61.71-13.38-65.18Z" fill={getColor(muscleReps['CALVES'] || 0, maxActivation)}/>
             <path class="calves" d="M639.16,460.15c-29.57,3.79-19.37,46.45-13.2,65.19,3.59,14.14,3.98,30.17,7.01,43.68,21.1,48.19,21.79-63.45,23.82-79.42,1.35-12.56-6.85-28.84-17.62-29.45Z" fill={getColor(muscleReps['CALVES'] || 0, maxActivation)}/>
           </g>
-          <g id="Hamstrings"  on:mouseover={(e) => handleMouseOver(e, "Hamstrings")} on:mouseout={handleMouseOut}>
+          <g id="Hamstrings" role="button" tabindex="0" on:mouseover={(e) => handleMouseOver(e, "Hamstrings")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Hamstrings")} on:blur={handleMouseOut}>
             <path class="hamstrings" d="M543.7,304.62c-13.96-4.79-23.48,13.79-29.74,27.53.24,31.13,1.14,103.92,12.56,109.83,38.9,6.5,19.93-128.87,17.19-137.37Z" fill={getColor(muscleReps['HAMSTRINGS'] || 0, maxActivation)}/>
             <path class="hamstrings" d="M617.82,305.62c13.96-4.79,23.48,13.79,29.74,27.53-.24,31.13-1.14,103.92-12.56,109.83-38.9,6.5-19.93-128.87-17.19-137.37Z" fill={getColor(muscleReps['HAMSTRINGS'] || 0, maxActivation)}/>
           </g>
-          <g id="Glutes"  on:mouseover={(e) => handleMouseOver(e, "Glutes")} on:mouseout={handleMouseOut}>
+          <g id="Glutes" role="button" tabindex="0" on:mouseover={(e) => handleMouseOver(e, "Glutes")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Glutes")} on:blur={handleMouseOut}>
             <path class="glutes" d="M544.73,222.01c-16.91,2.43-30.27,70.93-9.11,72.13,19.28-.16,43.85-1.87,41.64-25.28,1.27-14.09-19.45-43.25-32.19-46.85" fill={getColor(muscleReps['GLUTES'] || 0, maxActivation)}/>
             <path class="glutes" d="M616.8,222.01c16.91,2.43,30.27,70.93,9.11,72.13-19.28-.16-43.85-1.87-41.64-25.28-1.27-14.09,19.45-43.25,32.19-46.85" fill={getColor(muscleReps['GLUTES'] || 0, maxActivation)}/>
           </g>
-          <g id="Adductors"  on:mouseover={(e) => handleMouseOver(e, "Adductors")} on:mouseout={handleMouseOut}>
+          <g id="Adductors" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Adductors")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Adductors")} on:blur={handleMouseOut}>
             <path class="adductors" d="M612.26,303.89c-5.02-1.56-17.98-2.25-24.45-5.75-1.22,27.83,12.23,99.9,20.84,125.35-5.21-43.85-.47-96.73,3.61-119.6Z" fill={getColor(muscleReps['ADDUCTORS'] || 0, maxActivation)}/>
             <path class="adductors" d="M549.51,302.64c5.02-1.56,17.98-2.25,24.45-5.75,1.22,27.83-12.23,99.9-20.84,125.35,5.21-43.85.47-96.73-3.61-119.6Z" fill={getColor(muscleReps['ADDUCTORS'] || 0, maxActivation)}/>
           </g>
-          <g id="Abductors"  on:mouseover={(e) => handleMouseOver(e, "Abductors")} on:mouseout={handleMouseOut}>
+          <g id="Abductors" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Abductors")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Abductors")} on:blur={handleMouseOut}>
             <path class="abductors" d="M634.16,299.8c1.87,4.38,11.97,13.98,16.24,22.58.43.71,1,2.05,1.55,1.85-.49-41.14-5.98-73.09-18.89-109.78-9.39-26.44-3.84-12.56-18.07,1.16,23.4,2.27,37.77,71.11,19.16,84.2Z" fill={getColor(muscleReps['ABDUCTORS'] || 0, maxActivation)}/>
             <path class="abductors" d="M527.37,299.8c-1.87,4.38-11.97,13.98-16.24,22.58-.43.71-1,2.05-1.55,1.85.49-41.14,5.98-73.09,18.89-109.78,9.39-26.44,3.84-12.56,18.07,1.16-23.4,2.27-37.77,71.11-19.16,84.2Z" fill={getColor(muscleReps['ABDUCTORS'] || 0, maxActivation)}/>
           </g>
-          <g id="Lower_Back" data-name="Lower Back"  on:mouseover={(e) => handleMouseOver(e, "Lower_Back")} on:mouseout={handleMouseOut}>
+          <g id="Lower_Back" data-name="Lower Back" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Lower_Back")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Lower_Back")} on:blur={handleMouseOut}>
             <path class="lower_back" d="M562.07,175.91c-9.52,31.01-34.07,24.27-1.37,43.25,2.62,2.11,3.2,4.39,5.96,6.55,1.99,1.2,8.43,6.42,9.58,3.4-.07-7.84.03-34.41.2-65.66.12-15.12-13.14,5.56-14.37,12.46Z" fill={getColor(muscleReps['LOWER_BACK'] || 0, maxActivation)}/>
             <path class="lower_back" d="M599.39,175.73c-.99-5.65-12.7-25.4-14.26-14.51,0,29.95.28,60.65.15,67.89,1.12,3.08,7.62-2.27,9.58-3.4,2.76-2.15,3.34-4.44,5.96-6.55,32.73-19.03,8.12-12.16-1.43-43.43Z" fill={getColor(muscleReps['LOWER_BACK'] || 0, maxActivation)}/>
           </g>
-          <g id="Lats"  on:mouseover={(e) => handleMouseOver(e, "Lats")} on:mouseout={handleMouseOut}>
+          <g id="Lats" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Lats")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Lats")} on:blur={handleMouseOut}>
             <path class="lats" d="M570.59,151.81c-4.35-11.14-12.17-25.4-15.96-38.17-11.7-32.36,1.88-32.98-28.5-10.97-1.83,1.28-1.92,1.01-1.91,3.43-.66,22.61,1.46,41.16,5.26,68.84.71,1,7.89,28.21,13.27,23.01,12.73-10.2,15.08-34.68,27.83-46.14Z" fill={getColor(muscleReps['LATS'] || 0, maxActivation)}/>
             <path class="lats" d="M632.63,172.24c3.12-27.69,5.49-43.52,4.7-65.98,0-2.32,0-2.3-1.39-3.23-7.14-4.6-14.06-10.53-20.41-16.01-3.02.59-2.7,7.23-3.92,9.65-3.8,18.31-12.9,38.59-20.71,54.44.1,2.57,3.28,4.02,4.68,6.02,8.69,10.11,9.14,24.92,18.06,35.08,1.98,2.22,4.29,5.86,6.84,6.7,6.97-5.7,10.24-20.36,12.15-26.66Z" fill={getColor(muscleReps['LATS'] || 0, maxActivation)}/>
           </g>
-          <g id="Traps"  on:mouseover={(e) => handleMouseOver(e, "Traps")} on:mouseout={handleMouseOut}>
+          <g id="Traps" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Traps")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Traps")} on:blur={handleMouseOut}>
             <path class="traps" d="M562.93,39.14c-9.36,3.73-19.25,11.02-27.98,14.88-10.32,4.79-27.51,6.72-6.32,13.18,7.61,2.82,15.87,4.8,21.6,8.42,2.15,12.13,14.8,64.42,25.12,75.74,1.43-28.49,3.62-97.23,1.73-122.1-2.05,2.22-9.34,8.12-14.15,9.88Z" fill={getColor(muscleReps['TRAPS'] || 0, maxActivation)}/>
             <path class="traps" d="M600.7,119.81c15.09-50.6-2.94-39.93,40.2-55.8,2.57-1.74,3.7-2.93,1.31-3.73-12.66-4.19-28.09-12.95-39.97-19.5-5.86-2.06-14.73-7.94-17.66-11.43-1.02-.94-.78,2.26-.82,3.27-.09,24.87.81,88.84,2.13,118.37,1.11.93,12.14-21.39,14.81-31.17Z" fill={getColor(muscleReps['TRAPS'] || 0, maxActivation)}/>
           </g>
-          <g id="Rear_Delts" data-name="Rear Delts"  on:mouseover={(e) => handleMouseOver(e, "Shoulders")} on:mouseout={handleMouseOut}>
+          <g id="Rear_Delts" data-name="Rear Delts" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Shoulders")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Shoulders")} on:blur={handleMouseOut}>
             <path class="shoulders" d="M545.1,78.76c-9.89-5.14-28.39-10.05-31.9-12.96-19.24,7.63-24.58,46.12-24.45,48.62-.04.65-.13.77,1.24-.15,2.97-2.18,9.51-5.77,14.06-6.68,17.14-5.63,34.83-17.38,41.06-28.83Z" fill={getColor(muscleReps['SHOULDERS'] || 0, maxActivation)}/>
             <path class="shoulders" d="M661.51,108.82c4.04,1.32,8.39,4.51,11.19,6.12.92-.51-5.05-42.37-24.53-49.04-3.84,2.57-19.72,7.74-30.41,11.9-6.14,6.38,32.6,29.87,43.75,31.02Z" fill={getColor(muscleReps['SHOULDERS'] || 0, maxActivation)}/>
           </g>
-          <g id="Forearms_Wrist_Flexors_" data-name="Forearms (Wrist Flexors)"  on:mouseover={(e) => handleMouseOver(e, "Forearm")} on:mouseout={handleMouseOut}>
+          <g id="Forearms_Wrist_Flexors_" data-name="Forearms (Wrist Flexors)"  role="button" tabindex="0"   on:mouseover={(e) => handleMouseOver(e, "Forearm")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Forearm")} on:blur={handleMouseOut}>
             <path class="forearm" d="M481.7,179.5c-7.79-3.41-20.03,4.26-24.42,12.25-6.08,11.07-21.88,51.89-15.06,56.45,9.76,3.26,56.52-53.21,39.48-68.7Z" fill={getColor(muscleReps['FOREARM'] || 0, maxActivation)}/>
             <path class="forearm" d="M680.82,179.56c-16.64,15.71,31.73,71.77,41.6,68.63,6.82-4.56-10.98-45.37-17.06-56.45-4.41-8.01-16.73-15.76-24.54-12.18Z" fill={getColor(muscleReps['FOREARM'] || 0, maxActivation)}/>
           </g>
-          <g id="Triceps"  on:mouseover={(e) => handleMouseOver(e, "Triceps")} on:mouseout={handleMouseOut}>
+          <g id="Triceps" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Triceps")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Triceps")} on:blur={handleMouseOut}>
             <path class="triceps" d="M517.58,128.43c-.26-6.64-.09-15.35-.19-19.85-.49-2.04-6.6,2.09-8.65,2.62-7.4,2.43-14.31,5.38-18.85,12.12-7.46,9.89-11.54,23.13-11.37,35.33,1.17,1.95,11.99-8.88,14.46-12.03,1.49-1.77,3.24-4.07,2.31.06-.64,4.63-5.66,28.75,1.5,20.85,10.22-11.72,19.59-23.26,20.8-39.09Z" fill={getColor(muscleReps['TRICEPS'] || 0, maxActivation)}/>
             <path class="triceps" d="M682.96,158.81c.06-17.44-7.78-40.53-26.25-46.08-2.66,0-11.86-7.2-12.67-3.47.11,3.31.15,7.88.06,11.76-1.8,19.34,8.29,32.32,20.64,46.5,1.82,1.77,3.77,3.24,3.63-.41-.04-5.56-.49-12.61-2-19.79-1.07-4.63.24-3.05,2.33-.53,5.12,5.29,9.25,10.85,14.26,12.02Z" fill={getColor(muscleReps['TRICEPS'] || 0, maxActivation)}/>
           </g>
-          <g id="Neck"  on:mouseover={(e) => handleMouseOver(e, "Neck")} on:mouseout={handleMouseOut}>
+          <g id="Neck" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Neck")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Neck")} on:blur={handleMouseOut}>
             <path class="neck" d="M587.65,28.23c3.69,2.46,9.98,6.01,12.59,6.54.15-6.14-.43-13.68-1-19.76-.63-3.64-9.91-3.73-14.94-3.75-5.68.02.67,14.99,3.35,16.97Z" fill={getColor(muscleReps['NECK'] || 0, maxActivation)}/>
             <path class="neck" d="M562.45,14.48c-.98,5.29-1.01,14.21-1.29,19.99,1.85.83,5.79-2.65,9.68-4.27,6.53-2.79,7.83-11.24,8.78-17.23-.11-3.55-16.39-1.44-17.17,1.51Z" fill={getColor(muscleReps['NECK'] || 0, maxActivation)}/>
           </g>
         </g>
         <g id="Anterior_View_Muscles" data-name="Anterior View Muscles" transform="translate(0, -6)">
-          <g id="Quads" on:mouseover={(e) => handleMouseOver(e, "Quads")} on:mouseout={handleMouseOut}>
+          <g id="Quads" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Quads")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Quads")} on:blur={handleMouseOut}>
             <path class="quads" d="M151.01,315.88c-6.67-4.85-9.59-16.75-18.25-18.34-11.91,16.35-11.95,61.87-7.36,91.02,7.05,35.76,27.7,43.43,40.36,11.13,6.51-28.6,9.9-63.83-14.75-83.81Z" fill={getColor(muscleReps['QUADS'] || 0, maxActivation)}/>
             <path class="quads" d="M228.64,315.88c6.67-4.85,9.59-16.75,18.25-18.34,11.74,15.86,11.67,59.67,7.83,88.67-2.44,15.9-12.22,34.11-19.42,34.28-9.66.44-21.62-13.84-22.36-25.08-5.97-26.74-7.24-61.81,15.7-79.53Z" fill={getColor(muscleReps['QUADS'] || 0, maxActivation)}/>
           </g>
-          <g id="Adductors_Abductors" data-name="Adductors/Abductors"  on:mouseover={(e) => handleMouseOver(e, "Hips")} on:mouseout={handleMouseOut}>
+          <g id="Adductors_Abductors" role="button" tabindex="0"  data-name="Adductors/Abductors"  on:mouseover={(e) => handleMouseOver(e, "Hips")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Hips")} on:blur={handleMouseOut}>
             <g>
               <path class="hips" d="M134.6,227.81c3.8,6.94,18.39,12.84,25.99,17.37,4.61,7.73,7.11,16,14.24,20.62,1.83,1.45,1.31,1.85-.96,1.53-23.25-3.08-51.61-15.74-39.26-39.51ZM142.13,261.39c-3.31,13.94,1.45,30.63,6.19,43.68,12.89,13.16,27.78,32.18,28.71,57.81,2.24-33.54,17.11-60.24-8.92-81.34-4.81-3.91-20.94-21.78-25.98-20.15ZM129.17,249.1c-7.52,21.61-8.99,54.91-10.46,82.75,2.56-17.71,8.9-39.19,15.47-54.95,3.88-20.3,6.52-13.7-5.02-27.8Z" fill={getColor(muscleReps['HIPS'] || 0, maxActivation)}/>
               <path class="hips" d="M142.13,261.39c-3.31,13.94,1.45,30.63,6.19,43.68,12.89,13.16,27.78,32.18,28.71,57.81,2.24-33.54,17.11-60.24-8.92-81.34-4.81-3.91-20.94-21.78-25.98-20.15ZM129.17,249.1c-7.52,21.61-8.99,54.91-10.46,82.75,2.56-17.71,8.9-39.19,15.47-54.95,3.88-20.3,6.52-13.7-5.02-27.8Z" fill={getColor(muscleReps['HIPS'] || 0, maxActivation)}/>
@@ -190,27 +196,27 @@
               <path class="hips" d="M250.48,249.1c7.52,21.61,8.99,54.91,10.46,82.75-2.56-17.71-8.9-39.19-15.47-54.95-3.87-20.3-6.52-13.7,5.02-27.8Z" fill={getColor(muscleReps['HIPS'] || 0, maxActivation)}/>
             </g>
           </g>
-          <g id="Abs"  on:mouseover={(e) => handleMouseOver(e, "Abs")} on:mouseout={handleMouseOut}>
+          <g id="Abs" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Abs")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Abs")} on:blur={handleMouseOut}>
             <path class="abs" d="M178.15,139.45c-26.37.11-18.74,28.52-17.06,44.09-.26,11.97-2.07,24.6-.71,36.8,1.08,22.99,23.28,50.97,26.94,43.4,0-35.61,0-82.48,0-116.69-.09-5.34-3.92-7.72-9.17-7.6Z" fill={getColor(muscleReps['ABS'] || 0, maxActivation)}/>
             <path class="abs" d="M201.32,139.46c-5.16-.07-8.88,2.3-8.99,7.59,0,34.25,0,81.04,0,116.69,3.55,7.7,25.92-20.54,26.93-43.4,1.36-12.2-.44-24.83-.7-36.8,1.7-15.62,9.29-44.17-17.24-44.09Z" fill={getColor(muscleReps['ABS'] || 0, maxActivation)}/>
           </g>
-          <g id="Obliques" on:mouseover={(e) => handleMouseOver(e, "Obliques")} on:mouseout={handleMouseOut}>
+          <g id="Obliques" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Obliques")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Obliques")} on:blur={handleMouseOut}>
             <path class="obliques" d="M154.34,195.68c3.35-14.26-5.08-36.68.25-49.8-18.72.67-10.85,49.97-9.96,53.4-5.07,13.77-10.35,18.53,3.06,29.72,1.36,1.16,11.45,10.81,8.36,3.94-4.25-12.03-2.8-28.55-1.7-37.26Z" fill={getColor(muscleReps['OBLIQUES'] || 0, maxActivation)}/>
             <path class="obliques" d="M225.31,195.68c-3.35-14.27,5.08-36.67-.25-49.8,19.72.84,9.54,51.41,10.36,54.72,1.45,5.64,7.12,12.73,4.84,18.47-4.01,6.17-10.33,13.21-17.02,16.33,3.72-12.2,3.8-30.35,2.07-39.72Z" fill={getColor(muscleReps['OBLIQUES'] || 0, maxActivation)}/>
           </g>
-          <g id="Pecs"  on:mouseover={(e) => handleMouseOver(e, "Chest")} on:mouseout={handleMouseOut}>
+          <g id="Pecs" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Chest")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Chest")} on:blur={handleMouseOut}>
             <path class="chest" d="M181.25,129.07c10.27-9.18,4.18-29.71,5.56-42.39,1.71-14.22-12.74-13.03-22.5-13.05-7.61,1.06-19.47,8.02-27.76,13.57-12.42,8.43-11.96,21.73-4.24,34.07,10.14,15.4,35.27,19.13,48.94,7.8Z" fill={getColor(muscleReps['CHEST'] || 0, maxActivation)}/>
             <path class="chest" d="M239.07,84.52c-8.78-5.06-17.34-10.52-24.94-10.93-9.35,0-22.84-.42-21.26,12.48,1.39,13.6-5.73,37.33,8.41,45.1,28.8,19.06,75.47-23.77,37.79-46.65Z" fill={getColor(muscleReps['CHEST'] || 0, maxActivation)}/>
           </g>
-          <g id="Front_Side_Delts" data-name="Front/Side Delts" on:mouseover={(e) => handleMouseOver(e, "Shoulders")} on:mouseout={handleMouseOut}>
+          <g id="Front_Side_Delts" data-name="Front/Side Delts" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Shoulders")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Shoulders")} on:blur={handleMouseOut}>
             <path class="shoulders" d="M116.72,97.36c10.08-11.47,26.29-26.45,42.73-31.09,5.85-1.94-12.81-5.05-13.26-4.88-8.48-.76-14.78,1.34-21.08,5.32-16.65,9.89-24.72,30.09-27.93,50.04-1.25,9.1,18.48-19.19,19.54-19.39Z" fill={getColor(muscleReps['SHOULDERS'] || 0, maxActivation)}/>
             <path class="shoulders" d="M262.99,97.44c1.04.21,20.87,28.52,19.48,19.32-3.22-19.95-11.28-40.14-27.93-50.04-6.3-3.99-12.6-6.09-21.08-5.32-.72-.16-19.02,2.97-13.26,4.88,16.47,4.65,32.7,19.66,42.79,31.16Z" fill={getColor(muscleReps['SHOULDERS'] || 0, maxActivation)}/>
           </g>
-          <g id="Biceps" on:mouseover={(e) => handleMouseOver(e, "Biceps")} on:mouseout={handleMouseOut}>
+          <g id="Biceps" role="button" tabindex="0" on:mouseover={(e) => handleMouseOver(e, "Biceps")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Biceps")} on:blur={handleMouseOut}>
             <path class="biceps" d="M93.42,134.04c-19.88,47.7,4.36,60.02,28.59,6.62,2.05-9.28,2.39-31.36.13-37.25-6.83,3.45-24.34,20.58-28.72,30.64Z" fill={getColor(muscleReps['BICEPS'] || 0, maxActivation)}/>
             <path class="biceps" d="M290.1,176.9c12.78-21.21-10.77-61.62-32.65-72.59-1.4,8.02-2.97,32.2,2.53,42.38,4.47,9.42,21.05,34.27,30.12,30.21Z" fill={getColor(muscleReps['BICEPS'] || 0, maxActivation)}/>
           </g>
-          <g id="Forearms_Brachioradialis_" data-name="Forearms (Brachioradialis)"  on:mouseover={(e) => handleMouseOver(e, "Forearm")} on:mouseout={handleMouseOut}>
+          <g id="Forearms_Brachioradialis" role="button" tabindex="0"  data-name="Forearms (Brachioradialis)"  on:mouseover={(e) => handleMouseOver(e, "Forearm")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Forearm")} on:blur={handleMouseOut}>
             <path class="forearm" d="M85.71,180.12c-7.79-3.41-20.03,4.26-24.42,12.25-6.08,11.07-22.88,51.89-16.06,56.45,9.76,3.26,57.52-53.21,40.48-68.7Z" fill={getColor(muscleReps['FOREARM'] || 0, maxActivation)}/>
             <path class="forearm" d="M293.52,181.4c-16.64,15.71,30.73,71.77,40.6,68.63,6.82-4.56-9.98-45.37-16.06-56.45-4.41-8.01-16.73-15.76-24.54-12.18Z" fill={getColor(muscleReps['FOREARM'] || 0, maxActivation)}/>
           </g>
