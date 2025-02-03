@@ -73,7 +73,7 @@
     const getColor = (value: number, max: number) => {
         const ratio = (value / max) * 100;
         if (ratio <= 5) {           // Gray < 5%
-            return 'rgba(171, 171, 171, 0.8)';
+            return 'rgba(171, 171, 171, 0.5)';
         } else if (ratio <= 75) {   // Yellow (25%) -> Orange (75%)
             let g = 170 - Math.round(((ratio - 50) / 25) * (255 - 165));
             return `rgba(255, ${Math.min(255, g)}, 0, 0.8)`;
@@ -217,24 +217,33 @@
         </g>
       </svg>
 </div>
+{#if (maxActivation > 0)}
   <div class="mt-4 flex justify-center w-full">
     <div class="flex items-center mr-4">
       <div class="w-4 h-4 rounded-[45%] bg-[#ffff00] mr-2"></div>
-      <span class="">{Math.round(maxActivation * 0.25)} sets</span>
+      <span class="">{Math.round(maxActivation * 0.25)} reps</span>
   </div>
     <div class="flex items-center mr-4">
       <div class="w-4 h-4 rounded-[45%] bg-[#ffaa00] mr-2"></div>
-      <span class="">{Math.round(maxActivation * 0.50)} sets</span>
+      <span class="">{Math.round(maxActivation * 0.50)} reps</span>
     </div>
     <div class="flex items-center mr-4">
         <div class="w-4 h-4 rounded-[45%] bg-[#ff5000] mr-2"></div>
-        <span class="">{Math.round(maxActivation * 0.75)} sets</span>
+        <span class="">{Math.round(maxActivation * 0.75)} reps</span>
     </div>
     <div class="flex items-center mr-4">
         <div class="w-4 h-4 rounded-[45%] bg-[#8b0000] mr-2"></div>
-        <span class="">{Math.round(maxActivation)} sets</span>
+        <span class="">{Math.round(maxActivation)} reps</span>
     </div>
   </div>
+{:else}
+  <div class="mt-4 flex justify-center w-full">
+    <div class="flex items-center mr-4">
+      <div class="w-4 h-4 rounded-[45%] bg-[#ccc] mr-2"></div>
+      <span class="">0 reps</span>
+    </div>
+  </div>
+{/if}
 
 {#if hoveredMuscle && tooltipPosition}
     <div
