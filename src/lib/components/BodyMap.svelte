@@ -75,12 +75,12 @@
         if (ratio <= 5) {           // Gray < 5%
             return 'rgba(171, 171, 171, 0.8)';
         } else if (ratio <= 75) {   // Yellow (25%) -> Orange (75%)
-            let g = 110 - Math.round(((ratio - 50) / 25) * (255 - 165));
-            return `rgba(255, ${g}, 0, 0.8)`;
+            let g = 170 - Math.round(((ratio - 50) / 25) * (255 - 165));
+            return `rgba(255, ${Math.min(255, g)}, 0, 0.8)`;
         } else {                    // Orange (75%) -> Red (100%)
             let r = 255 - Math.round(((ratio - 75) / 25) * (255 - 139));
-            let g = 165 - Math.round(((ratio - 75) / 25) * 165);
-            return `rgba(${r}, ${g}, 0, 0.8)`;
+            let g = 100 - Math.round(((ratio - 75) / 25) * 165);
+            return `rgba(${Math.max(0, r)}, ${Math.max(0, g)}, 0, 0.8)`;
         }
     }
 
@@ -214,6 +214,24 @@
         </g>
       </svg>
 </div>
+  <div class="mt-4 flex justify-center w-full">
+    <div class="flex items-center mr-4">
+      <div class="w-4 h-4 rounded-[45%] bg-[#ffff00] mr-2"></div>
+      <span class="">{Math.round(maxActivation * 0.25)} sets</span>
+  </div>
+    <div class="flex items-center mr-4">
+      <div class="w-4 h-4 rounded-[45%] bg-[#ffaa00] mr-2"></div>
+      <span class="">{Math.round(maxActivation * 0.50)} sets</span>
+    </div>
+    <div class="flex items-center mr-4">
+        <div class="w-4 h-4 rounded-[45%] bg-[#ff5000] mr-2"></div>
+        <span class="">{Math.round(maxActivation * 0.75)} sets</span>
+    </div>
+    <div class="flex items-center mr-4">
+        <div class="w-4 h-4 rounded-[45%] bg-[#8b0000] mr-2"></div>
+        <span class="">{Math.round(maxActivation)} sets</span>
+    </div>
+  </div>
 
 {#if hoveredMuscle && tooltipPosition}
     <div
