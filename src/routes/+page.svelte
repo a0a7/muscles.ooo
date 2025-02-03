@@ -15,9 +15,9 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import Button from '$lib/components/ui/button/button.svelte';
-	import * as Card from '$lib/components/ui/card/';
-	import HomePage from '$lib/pages/HomePage.svelte';
-	import { Download } from 'lucide-svelte';
+    import * as Card from '$lib/components/ui/card/';
+    import HomePage from '$lib/pages/HomePage.svelte';
+    import { Download } from 'lucide-svelte';
     import fileSaver from 'file-saver';
     import Papa from 'papaparse';
     import YAML from 'yaml';
@@ -110,24 +110,58 @@
             const reader = new FileReader();
             reader.onload = () => {
                 fileContent = reader.result as string;
-                fileUploaded = true;
-                parseFileContent(fileContent);
+                if (file && validateFileContent(fileContent, file.type)) {
+                    fileUploaded = true;
+                    if (file) {
+                        parseFileContent(fileContent, file.type);
+                    }
+                } else {
+                    alert('Invalid file content - Upload JSON or YAML with the correct format');
+                }
             };
             reader.readAsText(file);
         }
     }
 
-    function parseFileContent(content: string) {
-        const data = JSON.parse(content);
-        const allActivitiesSet = new Set();
-
-        data.forEach((activity: any) => {
-            if (!allActivitiesSet.has(activity.activityId)) {
-                allActivitiesSet.add(activity.activityId);
-                allActivities.push(activity);
+    function validateFileContent(content: string, fileType: string): boolean {
+        try {
+            let data;
+            if (fileType === 'application/json') {
+                data = JSON.parse(content);
+            } else if (fileType === 'text/yaml' || fileType === 'application/x-yaml' || fileType === 'application/yaml' || fileType === 'text/x-yaml') {
+                data = YAML.parse(content);
+            } else {
+                return false;
             }
-        });
-        processMuscleInformation();
+            return Array.isArray(data) && (data.every(activity => activity.id && activity.name) || data.every(activity => activity.activityId && activity.activityName));
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function parseFileContent(content: string, fileType: string) {
+        let data;
+        if (fileType === 'application/json') {
+            data = JSON.parse(content);
+        } else if (fileType === 'text/yaml' || fileType === 'application/x-yaml' || fileType === 'application/yaml' || fileType === 'text/x-yaml') {
+            data = YAML.parse(content);
+        } else {
+            alert('Unsupported file type - Upload JSON or YAML');
+            return;
+        }
+
+        const allActivitiesSet = new Set();
+        if (Array.isArray(data) && data.every(activity => activity.id && activity.name)) {
+            activities = data;
+        } else if (Array.isArray(data) && data.every(activity => activity.activityId && activity.activityName)) {
+            data.forEach((activity: any) => {
+                if (!allActivitiesSet.has(activity.activityId)) {
+                    allActivitiesSet.add(activity.activityId);
+                    allActivities.push(activity);
+                }
+            });
+            processMuscleInformation();
+        }
     }
 
     async function fetchExerciseMuscleMap() {
@@ -136,77 +170,77 @@
     }
 
     async function processMuscleInformation() {
-    await fetchExerciseMuscleMap();
+        await fetchExerciseMuscleMap();
 
-    activities = allActivities.map(activity => {
-        if (activity.activityType.typeKey === 'strength_training') {
-            const activityExerciseSets: { name: string; reps: number; weight: number; time: string }[] = [];
-            if (Array.isArray(activity.fullExerciseSets)) {
-                activity.fullExerciseSets.forEach((exerciseSet: any) => {
-                    exerciseSet.exercises.forEach((exercise: any) => {
-                        const exerciseData = {
-                            name: exercise.name,
-                            reps: exerciseSet.repetitionCount,
-                            weight: exerciseSet.weight || 0,
-                            time: exerciseSet.startTime
-                        };
-                        activityExerciseSets.push(exerciseData);
+        activities = allActivities.map(activity => {
+            if (activity.activityType?.typeKey === 'strength_training' || activity.type === 'strength_training') {
+                const activityExerciseSets: { name: string; reps: number; weight: number; time: string }[] = [];
+                if (Array.isArray(activity.fullExerciseSets) || Array.isArray(activity.exerciseSets)) {
+                    (activity.fullExerciseSets || activity.exerciseSets).forEach((exerciseSet: any) => {
+                        exerciseSet.exercises.forEach((exercise: any) => {
+                            const exerciseData = {
+                                name: exercise.name,
+                                reps: exerciseSet.repetitionCount || exerciseSet.reps,
+                                weight: exerciseSet.weight || 0,
+                                time: exerciseSet.startTime || exerciseSet.time
+                            };
+                            activityExerciseSets.push(exerciseData);
+                        });
                     });
-                });
+                }
+                return {
+                    id: activity.activityId || activity.id,
+                    name: activity.activityName || activity.name,
+                    startTime: activity.startTimeLocal || activity.startTime,
+                    time: activity.duration || activity.time,
+                    movingTime: activity.movingDuration || activity.movingTime,
+                    exerciseSets: activityExerciseSets,
+                    totalReps: activity.totalReps,
+                    totalSets: activity.totalSets,
+                    calories: activity.calories,
+                    sweat: activity.waterEstimated || activity.sweat,
+                    avgHR: activity.averageHR || activity.avgHR,
+                    maxHR: activity.maxHR,
+                    zonesHR: activity.zonesHR || {
+                        z0: activity.hrTimeInZone_0,
+                        z1: activity.hrTimeInZone_1,
+                        z2: activity.hrTimeInZone_2,
+                        z3: activity.hrTimeInZone_3,
+                        z4: activity.hrTimeInZone_4,
+                        z5: activity.hrTimeInZone_5,
+                    },
+                };
+            } else {
+                return {
+                    id: activity.activityId || activity.id,
+                    name: activity.activityName || activity.name,
+                    type: activity.activityType?.typeKey || activity.type,
+                    startTime: activity.startTimeLocal || activity.startTime,
+                    time: activity.duration || activity.time,
+                    movingTime: activity.movingDuration || activity.movingTime,
+                    dist: activity.distance || activity.dist,
+                    avgSpeed: activity.averageSpeed || activity.avgSpeed,
+                    elevationGain: activity.elevationGain,
+                    calories: activity.calories,
+                    sweat: activity.waterEstimated || activity.sweat,
+                    avgHR: activity.averageHR || activity.avgHR,
+                    maxHR: activity.maxHR,
+                    zonesHR: activity.zonesHR || {
+                        z0: activity.hrTimeInZone_0,
+                        z1: activity.hrTimeInZone_1,
+                        z2: activity.hrTimeInZone_2,
+                        z3: activity.hrTimeInZone_3,
+                        z4: activity.hrTimeInZone_4,
+                        z5: activity.hrTimeInZone_5,
+                    },
+                };
             }
-            return {
-                id: activity.activityId,
-                name: activity.activityName,
-                startTime: activity.startTimeLocal,
-                time: activity.duration,
-                movingTime: activity.movingDuration,
-                exerciseSets: activityExerciseSets,
-                totalReps: activity.totalReps,
-                totalSets: activity.totalSets,
-                calories: activity.calories,
-                sweat: activity.waterEstimated,
-                avgHR: activity.averageHR,
-                maxHR: activity.maxHR,
-                zonesHR: {
-                    z0: activity.hrTimeInZone_0,
-                    z1: activity.hrTimeInZone_1,
-                    z2: activity.hrTimeInZone_2,
-                    z3: activity.hrTimeInZone_3,
-                    z4: activity.hrTimeInZone_4,
-                    z5: activity.hrTimeInZone_5,
-                },
-            };
-        } else {
-            return {
-                id: activity.activityId,
-                name: activity.activityName,
-                type: activity.activityType.typeKey,
-                startTime: activity.startTimeLocal,
-                time: activity.duration,
-                movingTime: activity.movingDuration,
-                dist: activity.distance,
-                avgSpeed: activity.averageSpeed,
-                elevationGain: activity.elevationGain,
-                calories: activity.calories,
-                sweat: activity.waterEstimated,
-                avgHR: activity.averageHR,
-                maxHR: activity.maxHR,
-                zonesHR: {
-                    z0: activity.hrTimeInZone_0,
-                    z1: activity.hrTimeInZone_1,
-                    z2: activity.hrTimeInZone_2,
-                    z3: activity.hrTimeInZone_3,
-                    z4: activity.hrTimeInZone_4,
-                    z5: activity.hrTimeInZone_5,
-                },
-            };
-        }
-    });
+        });
 
-    maxActivation = Math.max(...Object.values(muscleActivation));
-    localStorage.setItem('activities', JSON.stringify(activities));
-    console.log(activities);
-}
+        maxActivation = Math.max(...Object.values(muscleActivation));
+        localStorage.setItem('activities', JSON.stringify(activities));
+        console.log(activities);
+    }
 </script>
 
 <Sidebar.Provider>
@@ -258,7 +292,7 @@
                     </div>
                     <div class="flex flex-col items-center lg:mr-auto">
                         <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
-                        <Button variant="outline" class="ml-4 mt-6" onclick={() => {activities.set([]); localStorage.remove('activities'); location.reload()}}>Remove Uploaded Data</Button>                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+                        <Button variant="outline" class="ml-4 mt-6" onclick={() => {localStorage.removeItem('activities'); location.reload()}}>Remove Uploaded Data</Button>                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
                     </div>
                 </div>
             {:else if p === 'calendar'}
@@ -271,7 +305,7 @@
                     {volumeType}
                     {weightUnit}
                 />
-                {:else if p === 'weights-stats'}
+            {:else if p === 'weights-stats'}
                 <WeightsStatsPage {activities} />
             {:else if p === 'cycling-stats'}
                 <CyclingStatsPage {activities} />
@@ -283,4 +317,4 @@
         {/if}
     </div>
     </Sidebar.Inset>
-</Sidebar.Provider>
+</Sidebar.Provider> 
