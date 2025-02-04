@@ -39,8 +39,6 @@
         "TRICEPS",
     ];
 
-
-
     const getColor = (value: number, max: number) => {
         const ratio = (value / max) * 100;
         if (ratio <= 5) {           // Gray < 5%
@@ -61,13 +59,26 @@
             const rect = container.getBoundingClientRect();
             hoveredMuscle = muscle;
             if (event instanceof MouseEvent) {
-                const target = event.target as HTMLElement;
-                const rect = target.getBoundingClientRect();
-                tooltipPosition = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+              const target = event.target as HTMLElement;
+              const rect = target.getBoundingClientRect();
+              const parentRect = target.parentElement?.getBoundingClientRect();
+              tooltipPosition = {
+                x: rect.left + rect.width / 2 - (parentRect?.left || 0),
+                y: rect.top + rect.height / 2 - (parentRect?.top || 0)
+              };
+              if (new URLSearchParams(window.location.search).get('debug') === 'true') {
+                document.body.appendChild(Object.assign(document.createElement('div'), {
+                  style: `position: absolute; width: 10px; height: 10px; background-color: red; border-radius: 50%; top: ${tooltipPosition.y}px; left: ${tooltipPosition.x}px; pointer-events: none;`
+                }));
+              }
             } else if (event instanceof FocusEvent) {
-                const target = event.target as HTMLElement;
-                const rect = target.getBoundingClientRect();
-                tooltipPosition = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+              const target = event.target as HTMLElement;
+              const rect = target.getBoundingClientRect();
+              const parentRect = target.parentElement?.getBoundingClientRect();
+              tooltipPosition = {
+                x: rect.left + rect.width / 2 - (parentRect?.left || 0),
+                y: rect.top + rect.height / 2 - (parentRect?.top || 0)
+              };
             }
         }
     };
@@ -77,7 +88,7 @@
     };
 </script>
 <div id="bodyMapContent">
-<div class="relative w-full items-center justify-center">
+<div class="w-full items-center justify-center">
     <svg id="svgElement" data-name="" class="max-w-full max-h-full md:max-h-[50%] mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768.41 607.66">
         <defs>
           <style>
@@ -217,7 +228,7 @@
 </div>
 {#if hoveredMuscle && tooltipPosition}
     <div
-    class="dark:invert absolute bg-[#eee] bg-opacity-90 p-2 rounded shadow-lg z-50 transform translate-x-[80%] translate-y-[-80%] text-md font-medium text-gray-800 whitespace-nowrap"
+    class="dark:invert fixed bg-[#eee] bg-opacity-90 p-2 rounded shadow-lg z-50 transform  translate-x-[120%] text-md font-medium text-gray-800 whitespace-nowrap"
     style="top: {tooltipPosition.y}px; left: {tooltipPosition.x}px;">
     <h4 class="m-0 mb-1 font-bold">{hoveredMuscle}</h4>
     <p class="m-0">

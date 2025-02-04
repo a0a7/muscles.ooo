@@ -287,7 +287,7 @@
       
       </Carousel.Item>
     </Carousel.Content>
-    <Carousel.Previous class="  transform scale-150 mr-4"/>
+    <Carousel.Previous class="transform scale-150 mr-4"/>
     <Carousel.Next class="transform scale-150 ml-4"/>    
   </Carousel.Root>  
 </div>
