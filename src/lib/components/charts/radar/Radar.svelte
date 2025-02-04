@@ -17,7 +17,7 @@
   export let fillOpacity = 0.5;
 
   /**  @type {Number} [r=4.5] Each circle's radius. */
-  export let r = 6;
+  export let r = 4.5;
 
   /**  @type {String} [circleFill="#f0c"] Each circle's fill color. This is technically optional because it comes with a default value but you'll likely want to replace it with your own color. */
   export let circleFill = '#068';
@@ -26,7 +26,7 @@
   export let circleStroke = '#079';
 
   /**  @type {Number} [circleStrokeWidth=1] Each circle's stroke width. */
-  export let circleStrokeWidth = 1;
+  export let circleStrokeWidth = 0;
 
   $: angleSlice = (Math.PI * 2) / $config.x.length;
 

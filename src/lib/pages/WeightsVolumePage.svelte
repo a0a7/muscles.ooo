@@ -240,7 +240,7 @@
   <div class="mb-4 mt-8 w-full flex flex-col items-center justify-center gap-2">
     
     <Label for="timeFilter">Filter by Time</Label>
-    <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll" id="timeFilter">
+    <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">
       <Button onclick={() => { timeFilter = 'allTime'; filterActivities(); }} variant={timeFilter==='allTime' ? "default" : "outline"} >All Time</Button>
       <Button onclick={() => { timeFilter = 'last7days'; filterActivities(); }} variant={timeFilter === 'last7days' ? "default" : "outline"}>Last 7 Days</Button>
       <Button onclick={() => { timeFilter = 'last30days'; filterActivities(); }} variant={timeFilter === 'last30days' ? "default" : "outline"}>Last 30 Days</Button>
@@ -263,13 +263,12 @@
         </div>
       </Carousel.Item>
       <Carousel.Item class="">
-        <h3 class="text-center text-xl font-bold">Sets</h3>
-        <div class="flex flex-row justify-center items-center">
+        <h3 class="text-center text-xl font-bold">Total Sets</h3>
+        <div class="flex flex-row justify-center items-center pb-8">
           {#each Object.entries(transformedData) as [name, sets], index}
-            <p class="mx-3 inline text-lg">
-              {name.charAt(0).toUpperCase() + name.slice(1)} - {Math.round(sets)}
+            <p class="mx-3 inline text-lg text-center leading-5">
+              <b>{name.charAt(0).toUpperCase() + name.slice(1)}</b>:<br/>{Math.round(sets)}
             </p>
-            {#if index < Object.entries(transformedData).length - 1}<p class="font-bold text-sm mb-1">|</p> {/if}
           {/each}
         </div>
         <div class="w-[70%] h-[70%] mx-auto my-auto text-foreground">
