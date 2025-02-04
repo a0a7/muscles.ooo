@@ -6,7 +6,7 @@
 	import Label from '$lib/components/ui/label/label.svelte';
   import { LayerCake, Svg } from 'layercake';
   import * as Carousel from "$lib/components/ui/carousel/index.js";
-
+  import Sankey from '$lib/components/charts/Sankey.svelte';
   import Radar from '$lib/components/charts/radar/Radar.svelte';
   import AxisRadial from '$lib/components/charts/radar/AxisRadial.svelte';
   import exerciseMuscleGroups from '$lib/components/exercise-muscle-groups.json';
@@ -15,6 +15,10 @@
   export let volumeType: string = 'weight';
   export let weightUnit: string = 'kg';
 
+  let muscleSets: Record<string, number> = {};
+  let musclePrimarySets: Record<string, number> = {};
+  let muscleSecondarySets: Record<string, number> = {};
+  
   let muscleReps: Record<string, number> = {};
   let musclePrimaryReps: Record<string, number> = {};
   let muscleSecondaryReps: Record<string, number> = {};
@@ -23,7 +27,11 @@
   let flatSimplifiedMuscleGroupsData: number[] = [];
   let maxActivation = 0;
   let totalVolume = 0;
-
+  let filteredActivities = activities;
+  let startDate = new Date();
+  let endDate = new Date();
+  let timeFilter = 'allTime';
+  let sankeyData: { nodes: any[], links: any[] } = { nodes: [], links: [] };
 
   const allMuscles = [
     "ABDUCTORS",
@@ -44,6 +52,9 @@
     "SHOULDERS",
     "TRAPS",
     "TRICEPS",
+    "REAR_DELTS",
+    "SIDE_DELTS",
+    "FRONT_DELTS"
   ];
 
   const broadMuscleGroups: Record<string, string> = {
@@ -69,11 +80,6 @@
 
   const broadMuscles = ["arms", "back", "chest", "core", "legs", "shoulders"]; 
   
-  let filteredActivities = activities;
-  let startDate = new Date();
-  let endDate = new Date();
-  let timeFilter = 'allTime';
-
   const filterActivities = () => {
     const now = new Date();
     switch (timeFilter) {
@@ -118,23 +124,30 @@
   }
 
   function processActivities() {
+        muscleSets = {};
         muscleReps = {};
         musclePrimaryReps = {};
         muscleSecondaryReps = {};
+        musclePrimarySets = {};
+        muscleSecondarySets = {};
         muscleVolume = {};
         filteredActivities.forEach(activity => {
             if (activity && activity.exerciseSets && activity.exerciseSets.length > 0) {
                 activity.exerciseSets.forEach((set: any) => { // @ts-ignore
                         const muscles = exerciseMuscleGroups[set.name];
                         if (muscles) {
-                          if (set.reps) {
+                          if (set.reps && set.reps > 0) {
                             muscles.primaryMuscles.forEach((muscle: string) => {
+                                muscleSets[muscle] = (muscleSets[muscle] || 0) + 1;
                                 muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps;
+                                musclePrimarySets[muscle] = (musclePrimarySets[muscle] || 0) + 1;
                                 musclePrimaryReps[muscle] = (musclePrimaryReps[muscle] || 0) + set.reps;
                                 muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
                             });
                             muscles.secondaryMuscles.forEach((muscle: string) => {
-                                muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps * 0.5;
+                                muscleSets[muscle] = (muscleSets[muscle] || 0) + 0.5;
+                                muscleReps[muscle] = (muscleReps[muscle] || 0) + (set.reps * 0.5);
+                                muscleSecondarySets[muscle] = (muscleSecondarySets[muscle] || 0) + 1;
                                 muscleSecondaryReps[muscle] = (muscleSecondaryReps[muscle] || 0) + set.reps;
                                 muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
                             });
@@ -145,15 +158,15 @@
                     });
             }
         });
-        maxActivation = Math.max(...Object.values(muscleReps));
-        totalVolume = Object.values(muscleReps).reduce((a, b) => a + b, 0);
+        maxActivation = Math.max(...Object.values(muscleSets));
+        totalVolume = Object.values(muscleSets).reduce((a, b) => a + b, 0);
     }
 
     $: {
-    simplifiedMuscleGroupsData = Object.keys(muscleReps).reduce((acc, muscle) => {
+    simplifiedMuscleGroupsData = Object.keys(muscleSets).reduce((acc, muscle) => {
       const broadGroup = broadMuscleGroups[muscle];
       if (broadGroup) {
-        acc[broadGroup] = (acc[broadGroup] || 0) + muscleReps[muscle];
+        acc[broadGroup] = (acc[broadGroup] || 0) + muscleSets[muscle];
       }
       return acc;
     }, {} as Record<string, number>); 
@@ -168,7 +181,57 @@
   }
 
   $: transformedData = transformData(simplifiedMuscleGroupsData);
-  $: console.log(transformedData);
+
+  function createSankeyDataset(data: Record<string, number>) {
+    const nodes = [
+      { id: 'All Sets' },
+      { id: 'Upper' },
+      { id: 'Lower' },
+      ...broadMuscles.map(muscle => ({ id: `-${muscle.charAt(0).toUpperCase() + muscle.slice(1)}` })),
+      ...allMuscles.map(muscle => ({ id: `${muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase()}` }))
+    ];
+
+    const links = [];
+
+    const upperMuscles = ['arms', 'back', 'chest', 'core', 'shoulders'];
+    const lowerMuscles = ['legs'];
+
+    // Link All Sets to Upper and Lower
+    links.push({ source: 'All Sets', target: 'Upper', value: upperMuscles.reduce((acc, muscle) => acc + (data[muscle] || 0), 0) });
+    links.push({ source: 'All Sets', target: 'Lower', value: lowerMuscles.reduce((acc, muscle) => acc + (data[muscle] || 0), 0) });
+
+    // Link Upper and Lower to Broad Muscle Groups
+    upperMuscles.forEach(muscle => {
+      const target = `-${muscle.charAt(0).toUpperCase() + muscle.slice(1)}`;
+      if (target !== '-Upper') {
+        links.push({ source: 'Upper', target, value: data[muscle] || 0 });
+      }
+    });
+
+    lowerMuscles.forEach(muscle => {
+      const target = `-${muscle.charAt(0).toUpperCase() + muscle.slice(1)}`;
+      if (target !== '-Lower') {
+        links.push({ source: 'Lower', target, value: data[muscle] || 0 });
+      }
+    });
+
+    // Link Broad Muscle Groups to Specific Muscles
+    Object.entries(broadMuscleGroups).forEach(([muscle, group]) => {
+      const source = `-${group.charAt(0).toUpperCase() + group.slice(1)}`;
+      const target = `${muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase()}`;
+      if (source !== target) {
+        links.push({
+          source,
+          target,
+          value: muscleSets[muscle] || 0
+        });
+      }
+    });
+
+    return { nodes, links };
+  }
+
+  $: sankeyData = createSankeyDataset(transformedData);
 </script>
 
 <div class="max-w-[90%] mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -187,9 +250,19 @@
   </div>
   <Carousel.Root class="lg:max-w-[50%] mx-auto">
     <Carousel.Content>
-      <Carousel.Item class=""><div id="content"><BodyMap {muscleReps} {musclePrimaryReps} {muscleSecondaryReps} {maxActivation} {totalVolume}/></div></Carousel.Item>
       <Carousel.Item class="">
-        <h3 class="text-center text-xl font-bold">Reps</h3>
+        <div class="w-full h-full p-4">
+          <LayerCake data={sankeyData}>
+            <Svg>
+              <Sankey colorNodes={(d: string) => '#00bbff'} colorLinks={(d: string) => '#00bbff35'} />
+            </Svg>
+          </LayerCake>        
+        </div>
+      </Carousel.Item>
+
+      <Carousel.Item class=""><BodyMap {muscleSets} {musclePrimarySets} {muscleSecondarySets} {musclePrimaryReps} {muscleSecondaryReps} {maxActivation} {totalVolume}/></Carousel.Item>
+      <Carousel.Item class="">
+        <h3 class="text-center text-xl font-bold">Sets</h3>
         <div class="flex flex-row justify-center items-center">
           {#each Object.entries(transformedData) as [name, sets], index}
             <p class="mx-3 inline text-lg">
