@@ -61,7 +61,7 @@
             const rect = container.getBoundingClientRect();
             hoveredMuscle = muscle;
             if (event instanceof MouseEvent) {
-              const target = event.target as HTMLElement;
+                const target = event.target as HTMLElement;
                 const rect = target.getBoundingClientRect();
                 tooltipPosition = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
             } else if (event instanceof FocusEvent) {
