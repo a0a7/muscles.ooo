@@ -256,7 +256,7 @@
 
 <Sidebar.Provider>
     <AppSidebar />
-    <Sidebar.Inset>
+    <Sidebar.Inset class="max-w-full">
         <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <Sidebar.Trigger class="-ml-1" />
             <Separator orientation="vertical" class="mr-2 h-4" />
@@ -268,7 +268,7 @@
                 </Breadcrumb.List>
             </Breadcrumb.Root>
         </header>
-        <div>
+        <div class="w-full max-w-full">
             {#if !fileUploaded}
                 <div class="flex flex-col items-center mt-16">
                     <h2 class="font-bold text-3xl">Upload Data</h2>

@@ -10,6 +10,7 @@
   import Radar from '$lib/components/charts/radar/Radar.svelte';
   import AxisRadial from '$lib/components/charts/radar/AxisRadial.svelte';
   import exerciseMuscleGroups from '$lib/components/exercise-muscle-groups.json';
+  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 
   export let activities: any[] = [];
   export let volumeType: string = 'weight';
@@ -234,11 +235,12 @@
   $: sankeyData = createSankeyDataset(transformedData);
 </script>
 
-<div class="max-w-[90%] mx-auto px-4 sm:px-6 lg:px-8 ">
+<div class="max-w-[86.5%] px-6 lg:px-8 mx-auto">
   <h2 class="text-3xl font-bold mx-auto mt-8 text-center">Relative Muscle Activation</h2>
   <div class="mb-4 mt-8 w-full flex flex-col items-center justify-center gap-2">
+    
     <Label for="timeFilter">Filter by Time</Label>
-    <div class="flex space-x-2" id="timeFilter">
+    <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll" id="timeFilter">
       <Button onclick={() => { timeFilter = 'allTime'; filterActivities(); }} variant={timeFilter==='allTime' ? "default" : "outline"} >All Time</Button>
       <Button onclick={() => { timeFilter = 'last7days'; filterActivities(); }} variant={timeFilter === 'last7days' ? "default" : "outline"}>Last 7 Days</Button>
       <Button onclick={() => { timeFilter = 'last30days'; filterActivities(); }} variant={timeFilter === 'last30days' ? "default" : "outline"}>Last 30 Days</Button>
@@ -248,8 +250,9 @@
       {/each}
     </div>
   </div>
-  <Carousel.Root class="lg:max-w-[50%] mx-auto">
+  <Carousel.Root class="max-w-[100%] lg:max-w-[60%] mx-auto">
     <Carousel.Content>
+      <Carousel.Item class=""><BodyMap {muscleSets} {musclePrimarySets} {muscleSecondarySets} {musclePrimaryReps} {muscleSecondaryReps} {maxActivation} {totalVolume}/></Carousel.Item>
       <Carousel.Item class="">
         <div class="w-full h-full p-4">
           <LayerCake data={sankeyData}>
@@ -259,8 +262,6 @@
           </LayerCake>        
         </div>
       </Carousel.Item>
-
-      <Carousel.Item class=""><BodyMap {muscleSets} {musclePrimarySets} {muscleSecondarySets} {musclePrimaryReps} {muscleSecondaryReps} {maxActivation} {totalVolume}/></Carousel.Item>
       <Carousel.Item class="">
         <h3 class="text-center text-xl font-bold">Sets</h3>
         <div class="flex flex-row justify-center items-center">
@@ -287,7 +288,7 @@
       
       </Carousel.Item>
     </Carousel.Content>
-    <Carousel.Previous class="transform scale-150 mr-4"/>
+    <Carousel.Previous class="  transform scale-150 mr-4"/>
     <Carousel.Next class="transform scale-150 ml-4"/>    
   </Carousel.Root>  
 </div>
