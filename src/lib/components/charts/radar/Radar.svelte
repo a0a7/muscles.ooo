@@ -2,7 +2,7 @@
   import { getContext } from 'svelte';
   import { line, curveCardinalClosed } from 'd3-shape';
 
-  const { data, width, height, xGet, config } = getContext('LayerCake');
+  const { data, width, height, x, config } = getContext('LayerCake');
 
   /**  @type {String} [fill='#f0c'] The radar's fill color. This is technically optional because it comes with a default value but you'll likely want to replace it with your own color. */
   export let fill = '#079';
@@ -38,8 +38,8 @@
 
 <g transform="translate({$width / 2}, {$height / 2})">
   {#each $data as row}
-    {@const xVals = $xGet(row)}
-    {#if path(xVals)}
+  {@const xVals = $x(row).map((/** @type {number} */ d) => d / Math.max(...$x(row)) * $height / 2)}
+  {#if path(xVals)}
       <!-- Draw a line connecting all the dots -->
       <path
         class="path-line"
