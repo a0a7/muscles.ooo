@@ -21,6 +21,7 @@
     import fileSaver from 'file-saver';
     import Papa from 'papaparse';
     import YAML from 'yaml';
+    import { useMetric } from '../stores/useMetric';
 
     let p: string | null = $state(null);
     let file: File | null = null;
@@ -33,6 +34,7 @@
     let exerciseMuscleMap: { [key: string]: { primaryMuscles: string[], secondaryMuscles: string[] } } = $state({});
     let weightUnit: string = $state('kg');
     let activities: any = $state([]);
+    let useMetricValue = $state(true);
 
     const allMuscles = [
         "ABDUCTORS",
@@ -75,6 +77,10 @@
             activities = JSON.parse(cachedActivities);
             fileUploaded = true;
         }
+
+        useMetric.subscribe(value => {
+            useMetricValue = value;
+        });
 
         return () => unsubscribe();
     });
