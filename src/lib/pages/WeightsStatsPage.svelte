@@ -5,6 +5,7 @@
   import Label from '$lib/components/ui/label/label.svelte';
   import Beeswarm from '$lib/components/charts/beeswarm/Beeswarm.svelte';
   import AxisX from '$lib/components/charts/beeswarm/AxisX.svelte';
+  import { get } from 'svelte/store';
 
   import { LayerCake, Svg } from 'layercake'; // @ts-ignore
   import { format as d3Format } from 'd3-format';
@@ -75,7 +76,6 @@
     };
   }).filter(d => d !== null);
 
-
   const metrics = {
     sets: '# Sets',
     reps: '# Reps',
@@ -98,12 +98,52 @@
   });
 
   const addCommas = d3Format(',');
+
+  // Calculate mean and standard deviation
+  function calculateMeanAndStdDev(data: any[], key: string) {
+    const values = data.map(d => d[key]).filter(v => v != null && !isNaN(v));
+    const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
+    const stdDev = Math.sqrt(values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / values.length);
+    return { mean, stdDev };
+  }
+
+  function formatTime(seconds: number) {
+    const minutes = seconds / 60;
+    const h = Math.floor(minutes / 60);
+    const m = Math.round(minutes % 60);
+    return `${h > 0 ? h + "h " : ""}${m}m`;
+  }
+
+  function formatStartTime(seconds: number) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  function formatVolume(volume: number) {
+    const metric = get(useMetric);
+    return metric 
+        ? `${(volume / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg` 
+        : `${(volume / 453.592).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} lbs`;
+  }
+
+  $: stats = calculateMeanAndStdDev(beeswarmData, metricFilter);
+
+  $: formattedMean = metricFilter === 'startTime' ? formatStartTime(stats.mean) : 
+                     metricFilter === 'duration' || metricFilter === 'workingTime' ? formatTime(stats.mean) : 
+                     metricFilter === 'totalVolume' ? formatVolume(stats.mean) : 
+                     stats.mean.toFixed(2);
+
+  $: formattedStdDev = metricFilter === 'startTime' ? formatStartTime(stats.stdDev) : 
+                       metricFilter === 'duration' || metricFilter === 'workingTime' ? formatTime(stats.stdDev) : 
+                       metricFilter === 'totalVolume' ? formatVolume(stats.stdDev) : 
+                       stats.stdDev.toFixed(2);
 </script>
 
 <div class="max-w-[86.5%] h-full px-6 lg:px-8 mx-auto items-center justify-center">
-  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Workout Analysis</h2>
-  <div class="mb-4 mt-8 w-full mx-auto flex flex-col items-center justify-center gap-2">
-    <Label for="timeFilter">Filter by Time</Label>
+  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Weightlifting Statistics</h2>
+  <div class="mb-4 mt-4 w-full mx-auto flex flex-col items-center justify-center gap-2">
+    <Label for="timeFilter">Timeframe</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">
       <Button onclick={() => { timeFilter = 'allTime'; filterActivities(); }} variant={timeFilter==='allTime' ? "default" : "outline"} >All Time</Button>
       <Button onclick={() => { timeFilter = 'last7days'; filterActivities(); }} variant={timeFilter === 'last7days' ? "default" : "outline"}>Last 7 Days</Button>
@@ -114,15 +154,15 @@
       {/each}
     </div>
   </div>
-  <div class="mb-4 mt-8 max-w-full mx-auto h-full flex flex-col items-center justify-center gap-2">
-    <Label for="metricFilter">Filter by Metric</Label>
+  <div class="mb-4 mt-4 max-w-full mx-auto flex flex-col items-center justify-center gap-2">
+    <Label for="metricFilter">Metric</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="metricFilter">
       {#each Object.entries(metrics) as [key, label]}
         <Button onclick={() => { metricFilter = key; }} variant={metricFilter === key ? "default" : "outline"}>{label}</Button>
       {/each}
     </div>
   </div>
-  <div class="h-full w-full max-w-full lg:max-w-[60%] mx-auto p-4">
+  <div class="h-full w-full max-w-[100%] lg:max-w-[60%] mx-auto p-16">
     <div class="h-full w-full">
       <LayerCake 
         padding={{bottom: 15}}
@@ -143,10 +183,12 @@
           <Beeswarm
             r={width < 400 ? r / 1.6 : r}
             spacing={1}
-            isStartTime={metricFilter === 'startTime'}
           />
         </Svg>
       </LayerCake>
     </div>
+  </div>
+  <div class="mt-4 text-center">
+    <p><strong>Mean:</strong> {formattedMean} - <strong>Standard Deviation:</strong> {formattedStdDev}</p>
   </div>
 </div>
