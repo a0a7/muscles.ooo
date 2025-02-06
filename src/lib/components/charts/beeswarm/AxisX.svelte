@@ -51,8 +51,8 @@
     function formatVolumeTick(tick) {
         const metric = get(useMetric);
         return metric 
-            ? `${(tick / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg` 
-            : `${(tick / 453.592).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} lbs`;
+            ? `${(tick / 1000).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} kg` 
+            : `${(tick / 453.592).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} lbs`;
     }
 
     /**
