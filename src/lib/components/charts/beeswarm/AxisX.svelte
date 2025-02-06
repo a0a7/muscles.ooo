@@ -11,7 +11,10 @@
     export let formatTick = (/** @type {any} */ d) => d;
     export let baseline = false;
     export let snapTicks = false;
-    export let ticks = undefined;
+    /**
+	 * @type {number | ((arg0: any) => any) | undefined}
+	 */
+     export let ticks = undefined;
     export let xTick = undefined;
     export let yTick = 16;
     export let dxTick = 0;
@@ -21,6 +24,16 @@
     export let isStartTime = false;
 
     $: isBandwidth = typeof $xScale.bandwidth === 'function';
+
+    // Determine the number of ticks based on viewport width
+    $: {
+        const viewportWidth = window.innerWidth;
+        if (viewportWidth < 768) {
+            ticks = 5; // Fewer ticks for mobile
+        } else {
+            ticks = 10; // More ticks for larger screens
+        }
+    }
 
     $: tickVals = Array.isArray(ticks) ? ticks :
         isBandwidth ?
