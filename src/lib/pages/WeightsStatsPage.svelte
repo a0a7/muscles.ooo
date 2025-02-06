@@ -8,6 +8,7 @@
 
   import { LayerCake, Svg } from 'layercake'; // @ts-ignore
   import { format as d3Format } from 'd3-format';
+  import { useMetric } from '../../stores/useMetric';
 
   export let activities: any[] = [];
 
@@ -74,14 +75,14 @@
       totalVolume: activity.exerciseSets.reduce((acc: number, set: { weight: number; reps: number; }) => acc + (set.weight * set.reps), 0)
     };
   }).filter(d => d !== null);
-
+  
   const metrics = {
+    sets: '# Sets',
+    reps: '# Reps',
     totalVolume: 'Total Volume',
-    sets: 'Sets',
+    startTime: 'Time of Day (Start)',
     duration: 'Duration',
     workingTime: 'Working Time',
-    startTime: 'Start Time',
-    reps: 'Reps'
   };
 
   const titleKey = 'date';
@@ -135,6 +136,7 @@
             baseline={true}
             formatTick={addCommas}
             tickMarks={true}
+            isVolume={metricFilter === 'totalVolume'}
           />
           <Beeswarm
             r={width < 400 ? r / 1.6 : r}
