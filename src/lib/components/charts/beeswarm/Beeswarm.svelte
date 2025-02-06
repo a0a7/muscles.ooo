@@ -13,8 +13,8 @@
   export let spacing = 2;
 
   /**
-	 * @type {{ data: { data: { name: any; date: any; sets: number; duration: any; workingTime: number; reps: number; avgWeight: number; totalVolume: any; }; }; } | null}
-	 */
+     * @type {{ data: { data: { name: any; date: any; sets: number; duration: any; workingTime: number; reps: number; avgWeight: number; totalVolume: any; startTime: any; }; }; } | null}
+     */
   let hoveredCircle = null;
   let tooltipPosition = { x: 0, y: 0 };
   let tooltipVisible = false;
@@ -48,13 +48,6 @@
           y: targetRect.top + targetRect.height / 2 - rect.top
         };
         hoveredCircle = circle;
-        console.log(hoveredCircle);
-        tooltipPosition = {
-          x: targetRect.left + targetRect.width / 2 - rect.left,
-          y: targetRect.top + targetRect.height / 2 - rect.top
-        };
-        hoveredCircle = circle;
-        console.log(hoveredCircle);
       }
     }
   };
@@ -68,7 +61,9 @@
 
   document.addEventListener('click', handleDocumentClick);
 
-  $: circles = new AccurateBeeswarm($data, r + (spacing + strokeWidth) / 2, $xGet)
+  $: circles = new AccurateBeeswarm($data, r + (spacing + strokeWidth) / 2, (/** @type {{ data: { startTime: string | number | Date; }; }} */ d) => {
+      return $xGet(d);
+  })
     .oneSided()
     .calculateYPositions()
     .map((/** @type {{ x: any; y: any; datum: any; }} */ d) => ({ x: d.x, y: d.y, data: d.datum }));
@@ -90,7 +85,14 @@
     return metric 
         ? `${(volume / 1000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} kg` 
         : `${(volume / 453.592).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} lbs`;
-};
+  };
+
+  const formatTimeOfDay = (/** @type {string | number} */ startTime) => {
+      startTime = Number(startTime);
+      const hour = Math.floor(startTime / 3600);
+    const minute = Math.floor((startTime % 3600) / 60);
+    return `${hour}:${minute < 10 ? '0' + minute : minute}`;
+  };
 </script>
 
 <g id="beeswarmContainer" class='bee-group'>
@@ -140,6 +142,9 @@
       </p>
       <p class="m-0">
         <b>Volume:</b> {formatVolume(hoveredCircle.data.data.totalVolume)}
+      </p>
+      <p class="m-0">
+        <b>Start Time:</b> {formatTimeOfDay(hoveredCircle.data.data.startTime)}
       </p>
     </div>
   </foreignObject>

@@ -2,6 +2,7 @@
     import { getContext } from 'svelte';
     import { useMetric } from '../../../../stores/useMetric';
     import { get } from 'svelte/store';
+    import { format } from 'date-fns';
 
     const { width, height, xScale, yRange } = getContext('LayerCake');
 
@@ -16,6 +17,8 @@
     export let dxTick = 0;
     export let dyTick = 0;
     export let isVolume = false;
+    export let isTime = false;
+    export let isStartTime = false;
 
     $: isBandwidth = typeof $xScale.bandwidth === 'function';
 
@@ -43,13 +46,31 @@
     }
 
     /**
-	 * @param {number} tick
-	 */
+     * @param {number} tick
+     */
     function formatVolumeTick(tick) {
         const metric = get(useMetric);
         return metric 
             ? `${(tick / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg` 
             : `${(tick / 453.592).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} lbs`;
+    }
+
+    /**
+     * @param {number} tick
+     */
+    function formatTimeTick(tick) {
+        const hours = Math.floor(tick / 3600);
+        const minutes = Math.floor((tick % 3600) / 60);
+        return `${hours > 0 ? hours + 'h ' : ''}${minutes}m`;
+    }
+
+    /**
+     * @param {number} tick
+     */
+    function formatStartTimeTick(tick) {
+        const hours = Math.floor(tick / 3600);
+        const minutes = Math.floor((tick % 3600) / 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 </script>
 
@@ -67,7 +88,17 @@
                 y='{yTick}'
                 dx='{dxTick}'
                 dy='{dyTick}'
-                text-anchor='{textAnchor(i)}'>{isVolume ? formatVolumeTick(tick) : formatTick(tick)}</text>
+                text-anchor='{textAnchor(i)}'>
+                {#if isVolume}
+                    {formatVolumeTick(tick)}
+                {:else if isTime}
+                    {formatTimeTick(tick)}
+                {:else if isStartTime}
+                    {formatStartTimeTick(tick)}
+                {:else}
+                    {formatTick(tick)}
+                {/if}
+            </text>
         </g>
     {/each}
     {#if baseline === true}

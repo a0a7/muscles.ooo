@@ -61,21 +61,21 @@
     if (!activity.exerciseSets || activity.exerciseSets.length === 0) {
       return null;
     }
-    console.log(activity);
     const date = new Date(activity.startTime);
     return {
       name: activity.name,
       duration: activity.time,
       workingTime: activity.movingTime,
       sets: activity.exerciseSets.length,
-      startTime: activity.startTime,
+      startTime: date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds(),
       date: format(parseISO(activity.startTime), 'yyyy-MM-dd'),
       reps: activity.exerciseSets.reduce((acc: any, set: { reps: any; }) => acc + set.reps, 0),
       avgWeight: activity.exerciseSets.reduce((acc: any, set: { weight: any; }) => acc + set.weight, 0) / activity.exerciseSets.length,
       totalVolume: activity.exerciseSets.reduce((acc: number, set: { weight: number; reps: number; }) => acc + (set.weight * set.reps), 0)
     };
   }).filter(d => d !== null);
-  
+
+
   const metrics = {
     sets: '# Sets',
     reps: '# Reps',
@@ -137,10 +137,13 @@
             formatTick={addCommas}
             tickMarks={true}
             isVolume={metricFilter === 'totalVolume'}
+            isTime={metricFilter === 'duration' || metricFilter === 'workingTime'}
+            isStartTime={metricFilter === 'startTime'}
           />
           <Beeswarm
             r={width < 400 ? r / 1.6 : r}
             spacing={1}
+            isStartTime={metricFilter === 'startTime'}
           />
         </Svg>
       </LayerCake>
