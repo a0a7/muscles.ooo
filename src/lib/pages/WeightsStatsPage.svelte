@@ -165,7 +165,7 @@
   <div class="h-full w-full max-w-[100%] lg:max-w-[60%] mx-auto p-16">
     <div class="h-full w-full">
       <LayerCake 
-        padding={{bottom: 15}}
+        padding={{bottom: 15, top: 5}}
         x={metricFilter}
         data={dataTransformed}
         custom={{ getTitle: (d: { data: { title: string } }) => d.data.title }}
@@ -181,8 +181,8 @@
             isStartTime={metricFilter === 'startTime'}
           />
           <Beeswarm
-            r={width < 400 ? r / 1.6 : r}
-            spacing={1}
+            r={width < 400 ? r / 1.6 : r*1.15}
+            spacing={3}
           />
         </Svg>
       </LayerCake>
