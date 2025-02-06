@@ -1,6 +1,7 @@
 ## GymStats 
 
 This is a data visualization tool for Garmin watch users.
+![image](https://github.com/user-attachments/assets/374017b4-f802-495d-ab15-2394378f03de)
 
 ![image](https://github.com/user-attachments/assets/f7ea715c-ef75-429f-a1a9-6e6c2a145392)
 ![image](https://github.com/user-attachments/assets/7e92bc3f-26db-400f-a5c0-efe03ae1b53b)
