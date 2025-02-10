@@ -4,6 +4,9 @@
 
     let { children } = $props();
 </script>
+<head>
+    <title>muscles.ooo</title>
+</head>
 
 <ModeWatcher />
 {@render children()}
