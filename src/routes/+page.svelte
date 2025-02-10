@@ -22,6 +22,7 @@
     import Papa from 'papaparse';
     import YAML from 'yaml';
     import { useMetric } from '../stores/useMetric';
+	import WeightsSummaryPage from '$lib/pages/WeightsSummaryPage.svelte';
 
     let p: string | null = $state(null);
     let file: File | null = null;
@@ -330,7 +331,7 @@
             {:else if p === 'list'}
                 <ListPage {activities} />
             {:else if p === 'weights-stats'}
-                <WeightsStatsPage {activities} />
+                <WeightsSummaryPage {activities} />
             {:else if p === 'weights-volume'}
                 <WeightsVolumePage
                     {activities}

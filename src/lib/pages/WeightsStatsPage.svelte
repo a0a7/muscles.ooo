@@ -160,7 +160,7 @@
 </script>
 
 <div class="max-w-[86.5%] h-full px-6 lg:px-8 mx-auto items-center justify-center">
-  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Workout Analysis</h2>
+  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Beeswarm</h2>
   <div class="mb-4 mt-8 w-full mx-auto flex flex-col items-center justify-center gap-2">
     <Label for="timeFilter">Filter by Time</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">
@@ -209,8 +209,6 @@
           <Beeswarm
             r={width < 400 ? r / 1.6 : r*1.15}
             spacing={3}
-            isWeekday={metricFilter === 'dayTimeOfWeek'}
-            isYear={metricFilter === 'dayOfYear'}
           />
         </Svg>
       </LayerCake>
