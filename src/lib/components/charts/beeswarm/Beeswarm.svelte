@@ -11,6 +11,8 @@
   export let strokeWidth = 0;
   export let strokeColor = '#fff';
   export let spacing = 2;
+  export let isYear = false;
+  export let isWeekday = false;
 
   /**
      * @type {{ data: { data: { name: any; date: any; sets: number; duration: any; workingTime: number; reps: number; avgWeight: number; totalVolume: any; startTime: any; }; }; } | null}

@@ -2,7 +2,9 @@
     import { getContext } from 'svelte';
     import { useMetric } from '../../../../stores/useMetric';
     import { get } from 'svelte/store';
-    import { format } from 'date-fns';
+    import { scaleTime } from 'd3-scale';
+    import { timeDay, timeMonth } from 'd3-time';
+    import { timeFormat } from 'd3-time-format';
 
     const { width, height, xScale, yRange } = getContext('LayerCake');
 
@@ -11,10 +13,7 @@
     export let formatTick = (/** @type {any} */ d) => d;
     export let baseline = false;
     export let snapTicks = false;
-    /**
-	 * @type {number | ((arg0: any) => any) | undefined}
-	 */
-     export let ticks = undefined;
+    export let ticks = undefined;
     export let xTick = undefined;
     export let yTick = 16;
     export let dxTick = 0;
@@ -22,6 +21,8 @@
     export let isVolume = false;
     export let isTime = false;
     export let isStartTime = false;
+    export let isWeekday = false;
+    export let isYear = false;
 
     $: isBandwidth = typeof $xScale.bandwidth === 'function';
 
@@ -42,6 +43,21 @@
                 // @ts-ignore
                 ticks($xScale.ticks()) :
                     $xScale.ticks(ticks);
+
+    // Add additional ticks for dividing lines
+    $: if (isWeekday) {
+        const dayTicks = [];
+        for (let i = 0; i <= 7; i++) {
+            dayTicks.push(i * 86400); // 86400 seconds in a day
+        }
+        tickVals = dayTicks;
+    } else if (isYear) {
+        const monthTicks = [];
+        for (let i = 0; i <= 12; i++) {
+            monthTicks.push(i * 2592000); // 2592000 seconds in a month (approx)
+        }
+        tickVals = monthTicks;
+    }
 
     /**
      * @param {number} i
@@ -85,6 +101,24 @@
         const minutes = Math.floor((tick % 3600) / 60);
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
+
+    /**
+     * @param {number} tick
+     */
+    function formatWeekdayTick(tick) {
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const dayIndex = Math.floor(tick / 86400);
+        return days[dayIndex % 7];
+    }
+
+    /**
+     * @param {number} tick
+     */
+    function formatYearTick(tick) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthIndex = Math.floor(tick / 2592000);
+        return months[monthIndex % 12];
+    }
 </script>
 
 <g class='axis x-axis'>
@@ -97,7 +131,7 @@
                 <line class="tick-mark" y1='{0}' y2='{6}' x1='0' x2='0'></line>
             {/if}
             <text class="dark:invert"
-                x="{xTick || isBandwidth ? $xScale.bandwidth() / 2 : 0 }"
+                x="{isWeekday ? $xScale(tick + 43200) : (xTick || isBandwidth ? $xScale.bandwidth() / 2 : 0)}"
                 y='{yTick}'
                 dx='{dxTick}'
                 dy='{dyTick}'
@@ -108,6 +142,10 @@
                     {formatTimeTick(tick)}
                 {:else if isStartTime}
                     {formatStartTimeTick(tick)}
+                {:else if isWeekday && tick % 86400 === 0}
+                    {formatWeekdayTick(tick)}
+                {:else if isYear && tick % 2592000 === 0}
+                    {formatYearTick(tick)}
                 {:else}
                     {formatTick(tick)}
                 {/if}

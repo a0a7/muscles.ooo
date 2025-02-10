@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { format, subDays, subYears, parseISO } from 'date-fns';
+  import { format, subDays, subYears, parseISO, getDayOfYear, getDay, differenceInDays } from 'date-fns';
   import { Button } from "$lib/components/ui/button";
   import Label from '$lib/components/ui/label/label.svelte';
   import Beeswarm from '$lib/components/charts/beeswarm/Beeswarm.svelte';
@@ -63,13 +63,19 @@
       return null;
     }
     const date = new Date(activity.startTime);
+    const dayOfWeek = (getDay(date) + 6) % 7; // Adjust to make Monday the first day of the week
+    const timeOfDay = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    const dayTimeOfWeek = dayOfWeek * 86400 + timeOfDay; // Total seconds since the start of the week
     return {
       name: activity.name,
       duration: activity.time,
       workingTime: activity.movingTime,
       sets: activity.exerciseSets.length,
-      startTime: date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds(),
+      startTime: timeOfDay,
+      dayTimeOfWeek: dayTimeOfWeek,
       date: format(parseISO(activity.startTime), 'yyyy-MM-dd'),
+      dayOfYear: getDayOfYear(date),
+      daysSinceStart: differenceInDays(date, startDate),
       reps: activity.exerciseSets.reduce((acc: any, set: { reps: any; }) => acc + set.reps, 0),
       avgWeight: activity.exerciseSets.reduce((acc: any, set: { weight: any; }) => acc + set.weight, 0) / activity.exerciseSets.length,
       totalVolume: activity.exerciseSets.reduce((acc: number, set: { weight: number; reps: number; }) => acc + (set.weight * set.reps), 0)
@@ -83,6 +89,9 @@
     startTime: 'Time of Day (Start)',
     duration: 'Duration',
     workingTime: 'Working Time',
+    // dayTimeOfWeek: 'Day + Time of Week',
+    daysSinceStart: 'Days Since Start',
+    // dayOfYear: 'Day of Year'
   };
 
   const titleKey = 'date';
@@ -138,12 +147,22 @@
                        metricFilter === 'duration' || metricFilter === 'workingTime' ? formatTime(stats.stdDev) : 
                        metricFilter === 'totalVolume' ? formatVolume(stats.stdDev) : 
                        stats.stdDev.toFixed(2);
+
+  // Adjust tick count based on viewport width
+  let tickCount = 10;
+  $: {
+    if (window.innerWidth < 768) {
+      tickCount = 5;
+    } else {
+      tickCount = 10  ;
+    }
+  }
 </script>
 
 <div class="max-w-[86.5%] h-full px-6 lg:px-8 mx-auto items-center justify-center">
-  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Weightlifting Statistics</h2>
-  <div class="mb-4 mt-4 w-full mx-auto flex flex-col items-center justify-center gap-2">
-    <Label for="timeFilter">Timeframe</Label>
+  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Workout Analysis</h2>
+  <div class="mb-4 mt-8 w-full mx-auto flex flex-col items-center justify-center gap-2">
+    <Label for="timeFilter">Filter by Time</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">
       <Button onclick={() => { timeFilter = 'allTime'; filterActivities(); }} variant={timeFilter==='allTime' ? "default" : "outline"} >All Time</Button>
       <Button onclick={() => { timeFilter = 'last7days'; filterActivities(); }} variant={timeFilter === 'last7days' ? "default" : "outline"}>Last 7 Days</Button>
@@ -154,18 +173,22 @@
       {/each}
     </div>
   </div>
-  <div class="mb-4 mt-4 max-w-full mx-auto flex flex-col items-center justify-center gap-2">
+  <div class="mb-4 py-8 max-w-full mx-auto flex flex-col items-center justify-center gap-2">
     <Label for="metricFilter">Metric</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="metricFilter">
       {#each Object.entries(metrics) as [key, label]}
-        <Button onclick={() => { metricFilter = key; }} variant={metricFilter === key ? "default" : "outline"}>{label}</Button>
+        {#if key === 'daysSinceStart' && timeFilter === 'allTime'}
+          <!-- Skip this metric if timeFilter is 'allTime' -->
+        {:else}
+          <Button onclick={() => { metricFilter = key; }} variant={metricFilter === key ? "default" : "outline"}>{label}</Button>
+        {/if}
       {/each}
     </div>
   </div>
-  <div class="h-full w-full max-w-[100%] lg:max-w-[60%] mx-auto p-16">
+  <div class="h-full w-full max-w-full lg:max-w-[60%] mx-auto p-4">
     <div class="h-full w-full">
       <LayerCake 
-        padding={{bottom: 15, top: 5}}
+        padding={{bottom: 15}}
         x={metricFilter}
         data={dataTransformed}
         custom={{ getTitle: (d: { data: { title: string } }) => d.data.title }}
@@ -179,10 +202,15 @@
             isVolume={metricFilter === 'totalVolume'}
             isTime={metricFilter === 'duration' || metricFilter === 'workingTime'}
             isStartTime={metricFilter === 'startTime'}
+            isWeekday={metricFilter === 'dayTimeOfWeek'}
+            isYear={metricFilter === 'dayOfYear'}
+            ticks={tickCount}
           />
           <Beeswarm
             r={width < 400 ? r / 1.6 : r*1.15}
             spacing={3}
+            isWeekday={metricFilter === 'dayTimeOfWeek'}
+            isYear={metricFilter === 'dayOfYear'}
           />
         </Svg>
       </LayerCake>
