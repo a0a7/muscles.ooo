@@ -79,9 +79,16 @@
                         </Sidebar.MenuButton>
                     </Sidebar.MenuItem>
                     <Sidebar.MenuItem>
+                        <Sidebar.MenuButton isActive={false}>
+                            {#snippet child({ props })}
+                                <a href="?p=weights-charts" {...props}>Charts</a>
+                            {/snippet}
+                        </Sidebar.MenuButton>
+                    </Sidebar.MenuItem>
+                    <Sidebar.MenuItem>
                         <Sidebar.MenuButton>
                             {#snippet child({ props })}
-                                <a href="?p=weights-volume" {...props}>Volume Analysis</a>
+                                <a href="?p=weights-volume" {...props}>Muscle Activation</a>
                             {/snippet}
                         </Sidebar.MenuButton>
                     </Sidebar.MenuItem>

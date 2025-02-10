@@ -91,9 +91,11 @@
             case 'list':
                 return 'All Exercises';
             case 'weights-volume':
-                return 'Weightlifting Volume';
+                return 'Muscle Activation Comparison';
+            case 'weights-charts':
+                return 'Weightlifting Charts';
             case 'weights-stats':
-                return 'Weightlifting Statistics';
+                return 'Weightlifting Statistics Summary';
             case 'cycling-stats':
                 return 'Cycling Statistics';
             case 'cycling-map':
@@ -327,13 +329,15 @@
                 <CalendarPage {activities} />
             {:else if p === 'list'}
                 <ListPage {activities} />
+            {:else if p === 'weights-stats'}
+                <WeightsStatsPage {activities} />
             {:else if p === 'weights-volume'}
                 <WeightsVolumePage
                     {activities}
                     {volumeType}
                     {weightUnit}
                 />
-            {:else if p === 'weights-stats'}
+            {:else if p === 'weights-charts'}
                 <WeightsStatsPage {activities} />
             {:else if p === 'cycling-stats'}
                 <CyclingStatsPage {activities} />
