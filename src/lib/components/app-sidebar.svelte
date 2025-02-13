@@ -114,6 +114,14 @@
                             {/snippet}
                         </Sidebar.MenuButton>
                     </Sidebar.MenuItem>
+                    <Sidebar.MenuItem>
+                        <Sidebar.MenuButton>
+                            {#snippet child({ props })}
+                                <a href="?p=cycling-weather" {...props}>Weather</a>
+                            {/snippet}
+                        </Sidebar.MenuButton>
+                    </Sidebar.MenuItem>
+
                 </Sidebar.Menu>
             </Sidebar.GroupContent>
         </Sidebar.Group>

@@ -11,6 +11,7 @@
     import WeightsVolumePage from "$lib/pages/WeightsVolumePage.svelte";
     import WeightsStatsPage from "$lib/pages/WeightsStatsPage.svelte";
     import CyclingStatsPage from "$lib/pages/CyclingStatsPage.svelte";
+    import CyclingWeatherPage from "$lib/pages/CyclingWeatherPage.svelte";
     import CyclingMapPage from "$lib/pages/CyclingMapPage.svelte";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
@@ -99,6 +100,8 @@
                 return 'Weightlifting Statistics Summary';
             case 'cycling-stats':
                 return 'Cycling Statistics';
+            case 'cycling-weather':
+                return 'Cycling Weather';
             case 'cycling-map':
                 return 'Cycling Map';
             default:
@@ -252,13 +255,15 @@
                         z4: activity.hrTimeInZone_4,
                         z5: activity.hrTimeInZone_5,
                     },
+                    startLatLng: activity.startLatLng || [activity.startLatitude, activity.startLongitude],
+                    endLatLng: activity.endLatLng || [activity.endLatitude, activity.endLongitude],
+                    location: activity.location || activity.locationName,
                 };
             }
         });
 
         maxActivation = Math.max(...Object.values(muscleActivation));
         localStorage.setItem('activities', JSON.stringify(activities));
-        console.log(activities);
     }
 
 </script>
@@ -331,7 +336,11 @@
             {:else if p === 'list'}
                 <ListPage {activities} />
             {:else if p === 'weights-stats'}
-                <WeightsSummaryPage {activities} />
+                <WeightsSummaryPage 
+                    {activities} 
+                    {volumeType}
+                    {weightUnit}
+                />
             {:else if p === 'weights-volume'}
                 <WeightsVolumePage
                     {activities}
@@ -342,6 +351,8 @@
                 <WeightsStatsPage {activities} />
             {:else if p === 'cycling-stats'}
                 <CyclingStatsPage {activities} />
+            {:else if p === 'cycling-weather'}
+                <CyclingWeatherPage {activities} />
             {:else if p === 'cycling-map'}
                 <CyclingMapPage {activities} />
             {:else}
