@@ -13,6 +13,7 @@
 
     function toggleUnit() {
         useMetric.set(!get(useMetric));
+        console.log(get(useMetric));
     }
 </script>
 
@@ -128,7 +129,7 @@
     </Sidebar.Content>
     <div class="bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between space-x-2">
-            <Label for="unit-switch">lbs/ft/mi</Label>
+            <Label for="unit-switch">kg/m/km</Label>
             <Switch.Root
             id="unit-switch"
             class="peer inline-flex h-[20px] min-h-[20px] w-[36px] shrink-0 cursor-pointer items-center rounded-full px-[3px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-foreground data-[state=unchecked]:bg-foreground data-[state=unchecked]:shadow-mini-inset dark:data-[state=checked]:bg-foreground"
@@ -139,7 +140,7 @@
               class="pointer-events-none block size-[16px] shrink-0 rounded-full bg-background transition-transform data-[state=checked]:translate-x-[14px] data-[state=unchecked]:translate-x-0 data-[state=unchecked]:shadow-mini dark:border dark:border-background/30 dark:bg-background dark:shadow-popover dark:data-[state=unchecked]:border"
             />
           </Switch.Root>
-            <Label for="unit-switch">kg/m/km</Label>
+            <Label for="unit-switch">lbs/ft/mi</Label>
         </div>
     </div>
     <Sidebar.Rail />

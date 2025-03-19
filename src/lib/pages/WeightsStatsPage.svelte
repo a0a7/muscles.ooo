@@ -108,7 +108,6 @@
 
   const addCommas = d3Format(',');
 
-  // Calculate mean and standard deviation
   function calculateMeanAndStdDev(data: any[], key: string) {
     const values = data.map(d => d[key]).filter(v => v != null && !isNaN(v));
     const mean = values.reduce((acc, val) => acc + val, 0) / values.length;
