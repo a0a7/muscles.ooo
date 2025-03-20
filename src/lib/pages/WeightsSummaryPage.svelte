@@ -163,7 +163,7 @@
     <!-- All Time Section -->
     <div class="mb-8">
       <h3 class="text-2xl font-bold mx-auto mt-8 text-center">Summary</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg mt-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 dark:bg-opacity-[15%] p-4 rounded-lg mt-8">
           <div class="text-center">
               <div class="text-sm text-gray-500">Total Workouts</div>
               <div class="text-xl font-bold">{totalWorkouts}</div>
@@ -207,12 +207,12 @@
       <h3 class="text-2xl font-bold mx-auto mt-8 text-center">Yearly</h3>
       <Carousel.Root class="max-w-[100%] lg:max-w-[60%] mx-auto">
           <Carousel.Content>
-              {#each Array.from(new Set(activities.map(activity => new Date(activity.startTime).getFullYear()))).sort((a, b) => b - a) as year}
+              {#each Array.from(new Set(activities.map(activity => new Date(activity.startTime).getFullYear()))).sort((a, b) => b - a).reverse() as year}
                   <Carousel.Item class="">
                       <h4 class="text-xl font-bold mx-auto mt-8 text-center">{year}</h4>
                       {#if activities.filter(activity => new Date(activity.startTime).getFullYear() === year && activity.hasOwnProperty('exerciseSets')).length > 0}
                           {#await new Promise(resolve => resolve(getYearlyStats(year))) then stats}
-                              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 p-4 rounded-lg mt-8">
+                              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 dark:bg-opacity-[15%] p-4 rounded-lg mt-8">
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Workouts</div>
                                       <div class="text-xl font-bold">{stats.yearTotalWorkouts}</div>
