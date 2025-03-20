@@ -96,7 +96,7 @@
                 </Sidebar.Menu>
             </Sidebar.GroupContent>
         </Sidebar.Group>
-
+<!--
         <Sidebar.Group>
             <Sidebar.GroupLabel><Bike /> &nbsp; Cycling</Sidebar.GroupLabel>
             <Sidebar.GroupContent>
@@ -125,7 +125,7 @@
 
                 </Sidebar.Menu>
             </Sidebar.GroupContent>
-        </Sidebar.Group>
+        </Sidebar.Group>-->
     </Sidebar.Content>
     <div class="bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between space-x-2">
