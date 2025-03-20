@@ -7,7 +7,7 @@
 </script>
 
 <div class="text-center my-32">
-    <h1 class="text-3xl font-bold">welcome!</h1>
+    <h1 class="text-3xl font-bold pb-4">welcome!</h1>
     <p class="text-2xl mt-4">
         Successfully imported 
         <span class="relative inline-block">
