@@ -10,7 +10,7 @@
     export let activities: any[] = [];
     export let volumeType: string = 'weight';
   
-    let filteredActivities = [];
+    let filteredActivities: any[] = [];
     let startDate = new Date();
     let endDate = new Date();
     let timeFilter = 'allTime';
@@ -215,39 +215,39 @@
                               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 dark:bg-gray-800 dark:bg-opacity-[15%] p-4 rounded-lg mt-8">
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Workouts</div>
-                                      <div class="text-xl font-bold">{stats.yearTotalWorkouts}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearTotalWorkouts}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Time</div>
-                                      <div class="text-xl font-bold">{Math.floor(stats.yearTotalTime / 3600)}h {Math.floor((stats.yearTotalTime % 3600) / 60)}m</div>
+                                      <div class="text-xl font-bold">{Math.floor((stats as YearlyStats).yearTotalTime / 3600)}h {Math.floor(((stats as YearlyStats).yearTotalTime % 3600) / 60)}m</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Sets</div>
-                                      <div class="text-xl font-bold">{stats.yearTotalSets}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearTotalSets}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Reps</div>
-                                      <div class="text-xl font-bold">{stats.yearTotalReps}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearTotalReps}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Volume</div>
-                                      <div class="text-xl font-bold">{(stats.yearTotalVolume / 1000).toFixed(2)} {weightUnit}</div>
+                                      <div class="text-xl font-bold">{((stats as YearlyStats).yearTotalVolume / 1000).toFixed(2)} {weightUnit}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Average Reps per Set</div>
-                                      <div class="text-xl font-bold">{stats.yearAverageRepsPerSet.toFixed(2)}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearAverageRepsPerSet.toFixed(2)}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Average Time per Workout</div>
-                                      <div class="text-xl font-bold">{Math.floor(stats.yearAverageTimePerWorkout / 3600)}h {Math.floor((stats.yearAverageTimePerWorkout % 3600) / 60)}m</div>
+                                      <div class="text-xl font-bold">{Math.floor((stats as YearlyStats).yearAverageTimePerWorkout / 3600)}h {Math.floor(((stats as YearlyStats).yearAverageTimePerWorkout % 3600) / 60)}m</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Calories Burned</div>
-                                      <div class="text-xl font-bold">{stats.yearTotalCaloriesBurned}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearTotalCaloriesBurned}</div>
                                   </div>
                                   <div class="text-center">
                                       <div class="text-sm text-gray-500">Total Sweat Lost</div>
-                                      <div class="text-xl font-bold">{stats.yearTotalSweatLost.toFixed(2)} {sweatUnit}</div>
+                                      <div class="text-xl font-bold">{(stats as YearlyStats).yearTotalSweatLost.toFixed(2)} {sweatUnit}</div>
                                   </div>
                               </div>
                           {:catch error}

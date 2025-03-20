@@ -10,7 +10,10 @@
     export let formatTick = (/** @type {any} */ d) => d;
     export let baseline = false;
     export let snapTicks = false;
-    export let ticks = undefined;
+    /**
+	 * @type {number | ((arg0: any) => any) | undefined}
+	 */
+     export let ticks = undefined;
     export let xTick = undefined;
     export let yTick = 16;
     export let dxTick = 0;
