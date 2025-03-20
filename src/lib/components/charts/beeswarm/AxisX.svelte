@@ -2,8 +2,6 @@
     import { getContext } from 'svelte';
     import { useMetric } from '../../../../stores/useMetric';
     import { get } from 'svelte/store';
-    import { timeDay, timeMonth } from 'd3-time';
-    import { timeFormat } from 'd3-time-format';
 
     const { width, height, xScale, yRange } = getContext('LayerCake');
 
