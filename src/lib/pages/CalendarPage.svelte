@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { format, eachDayOfInterval, startOfWeek, endOfWeek, isSameDay, subWeeks, addDays, getDay, getYear, startOfYear, endOfYear } from 'date-fns';
+    import { format, eachDayOfInterval, startOfWeek, endOfWeek, isSameDay, subWeeks, addDays, getDay, getYear, startOfYear, endOfYear, lastDayOfDecade } from 'date-fns';
 
     export let activities: any[] = [];
 
@@ -11,11 +11,15 @@
     let past52WeeksMonthLabels: { month: string, index: number }[] = [];
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+    let showAllYears = false;
+    let years: number[] = [];
+
     onMount(() => {
-        const years = Array.from(new Set(activities.map(a => getYear(new Date(a.startTime)))));
-        years.forEach(year => {
-            generateHeatmapDataForYear(year);
-        });
+        years = Array.from(new Set(activities.map(a => getYear(new Date(a.startTime)))));
+        if (years.length > 0) {
+            generateHeatmapDataForYear(years[0]); // Most recent year
+            console.log(years[0])
+        }
         generatePast52WeeksData();
     });
 
@@ -125,6 +129,13 @@
         const opacity = Math.round(Math.min(((totalTime / maxTime) *10), 10))*10;
         return opacity;
     }
+
+    function loadMoreYears() {
+        years.slice(1,).forEach(year => {
+            generateHeatmapDataForYear(year);
+        });
+        showAllYears = true;
+    }
 </script>
 
 <div class="pb-10">
@@ -165,34 +176,41 @@
             {/each}
         </div>
     </div>
-<div class="pt-4">
-    <h2 class="text-2xl font-black text-center">By Year</h2>
-    {#each Object.keys(heatmapDataByYear).reverse() as year}
-        <div class="mx-auto w-fit">
-            <h2 class="text-xs px-8 transform scale-x-[102.5%] font-black pt-2">{year}</h2>
-            <div class="flex">
-                <div class="mt-[1px] text-right pr-1">   
-                    {#each weekdays as weekday}
-                        <div class="text-[9.5px] -my-[1.1px]">{weekday}</div>
-                    {/each}
-                </div>
-                {#each weeksByYear[year] as week}
-                    <div class="mx-[1px] {week === weeksByYear[year][0] ? 'mt-auto' : ''}">
-                        {#each week as date}
-                            {@const activity = heatmapDataByYear[year].find(d => isSameDay(d.date, date))}
-                            <div class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(activity?.type)} opacity-{getOpacity(activity?.totalTime)}" title="{format(date, 'yyyy-MM-dd')}"></div>
+    <div class="pt-4">
+        <h2 class="text-2xl font-black text-center">By Year</h2>
+        {#each (Object.keys(heatmapDataByYear)).reverse() as year, index}
+            {#if String(year) === String(years[0]) || showAllYears}
+                <div class="mx-auto w-fit">
+                    <h2 class="text-xs px-8 transform scale-x-[102.5%] font-black pt-2">{year}</h2>
+                    <div class="flex">
+                        <div class="mt-[1px] text-right pr-1">   
+                            {#each weekdays as weekday}
+                                <div class="text-[9.5px] -my-[1.1px]">{weekday}</div>
+                            {/each}
+                        </div>
+                        {#each weeksByYear[year] as week}
+                            <div class="mx-[1px] {week === weeksByYear[year][0] ? 'mt-auto' : ''}">
+                                {#each week as date}
+                                    {@const activity = heatmapDataByYear[year].find(d => isSameDay(d.date, date))}
+                                    <div class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(activity?.type)} opacity-{getOpacity(activity?.totalTime)}" title="{format(date, 'yyyy-MM-dd')}"></div>
+                                {/each}
+                            </div>
                         {/each}
                     </div>
-                {/each}
-            </div>
-            {#if year === Object.keys(heatmapDataByYear)[0]}
-            <div class="flex">
-                {#each monthLabelsByYear[year] as { month, index }}
-                    <div class="mx-[24px] flex w-[13px] text-[9px]" style="grid-column-start: {index + 2}">{month}</div>
-                {/each}
-            </div>
+                </div>
             {/if}
-        </div>
-    {/each}
-</div>
+            <div class="w-fit mx-auto">
+                <div class="flex">
+                    {#each monthLabelsByYear[year] as { month, index }}
+                        <div class="mx-[24.5px] flex w-[13px] text-[9px]" style="grid-column-start: {index + 2}">{month}</div>
+                    {/each}
+                </div>
+            </div>
+        {/each}
+        {#if !showAllYears}
+            <div class="flex justify-center pt-4">
+                <button class="bg-background hover:opacity-80 text-white px-4 py-2 rounded-xl" on:click={loadMoreYears}>Load More</button>
+            </div>
+        {/if}
+    </div>
 </div>
