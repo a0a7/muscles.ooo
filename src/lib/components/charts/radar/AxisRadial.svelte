@@ -1,6 +1,9 @@
-<script>
+<!--
+  @component
+  Generates an SVG radial scale, useful for radar charts.
+ -->
+ <script>
   import { getContext } from 'svelte';
-  import { scaleLog } from 'd3-scale';
 
   const { width, height, xScale, extents, config } = getContext('LayerCake');
 
@@ -10,12 +13,7 @@
   /** @type {Number} [labelPlacementFactor=1.25] - How far to place the labels from the circle's center. A value of `1` puts them at the circle's circumference. */
   export let labelPlacementFactor = 1.25;
 
-  // Create a logarithmic scale for the radial distances
-  $: logScale = scaleLog()
-    .domain([1, Math.max(...$extents.x)])
-    .range([0, $height / 2]);
-
-  $: max = logScale(Math.max(...$extents.x));
+  $: max = $xScale(Math.max(...$extents.x));
 
   $: lineLength = max * lineLengthFactor;
   $: labelPlacement = max * labelPlacementFactor;
@@ -34,8 +32,8 @@
   }
 </script>
 
-<g transform="translate({$width / 2}, {$height / 2})">
-  <circle cx="0" cy="0" r={max} stroke="#ccc" stroke-width="1" fill="#CDCDCD" fill-opacity="0.1"></circle>
+<g transform="translate({$width / 2}, {$height / 2})" >
+  <circle cx="0" cy="0" r={max} stroke="#ccc" stroke-width="1" fill="#BCC" fill-opacity="0.07"></circle>
   <circle cx="0" cy="0" r={max / 2} stroke="#ccc" stroke-width="1" fill="none"></circle>
 
   {#each $config.x as label, i}
@@ -48,13 +46,14 @@
       stroke="#ccc"
       stroke-width="1"
       fill="none"
-    ></line>
+    >
+    </line>
     <text class="dark:invert text-xl font-bold"
       text-anchor={anchor($config.x.length, i)}
       dy="0.35em"
       font-size="12px"
-      transform="translate({labelPlacement * Math.cos(thisAngleSlice)}, {labelPlacement * Math.sin(thisAngleSlice)})">
-      {label.charAt(0).toUpperCase() + label.slice(1)}
-    </text>
+      transform="translate({labelPlacement * Math.cos(thisAngleSlice)}, {labelPlacement *
+        Math.sin(thisAngleSlice)})">{label.charAt(0).toUpperCase() + label.slice(1)}</text
+    >
   {/each}
 </g>
