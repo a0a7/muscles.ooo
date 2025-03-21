@@ -1,6 +1,7 @@
 <script>
   import { getContext } from 'svelte';
   import { line, curveCardinalClosed } from 'd3-shape';
+  import { scalePow } from 'd3-scale';
 
   const { data, width, height, x, config } = getContext('LayerCake');
 
@@ -30,32 +31,38 @@
 
   $: angleSlice = (Math.PI * 2) / $config.x.length;
 
+  // Create a power scale for the radial distances with an exponent of 0.33
+  $: powerScale = scalePow()
+    .exponent(0.333)
+    .domain([0, Math.max(...$data.flatMap(row => $x(row)))])
+    .range([0, $height / 2]);
+
   $: path = line()
-    .curve(curveCardinalClosed) // @ts-ignore
-    .x((d, i) => d * Math.cos(angleSlice * i - Math.PI / 2))    // @ts-ignore
-    .y((d, i) => d * Math.sin(angleSlice * i - Math.PI / 2));
+    .curve(curveCardinalClosed)
+    .x((d, i) => powerScale(d) * Math.cos(angleSlice * i - Math.PI / 2))
+    .y((d, i) => powerScale(d) * Math.sin(angleSlice * i - Math.PI / 2));
 </script>
 
 <g transform="translate({$width / 2}, {$height / 2})">
   {#each $data as row}
-  {@const xVals = $x(row).map((/** @type {number} */ d) => d / Math.max(...$x(row)) * $height / 2)}
-  {#if path(xVals)}
+    {@const xVals = $x(row)}
+    {#if path(xVals)}
       <!-- Draw a line connecting all the dots -->
       <path
         class="path-line"
         d={path(xVals)}
-        {stroke}
+        stroke={stroke}
         stroke-width={strokeWidth}
-        {fill}
+        fill={fill}
         fill-opacity={fillOpacity}
       ></path>
 
-      <!-- Plot each dots -->
+      <!-- Plot each dot -->
       {#each xVals as circleR, i}
         {@const thisAngleSlice = angleSlice * i - Math.PI / 2}
         <circle
-          cx={circleR * Math.cos(thisAngleSlice)}
-          cy={circleR * Math.sin(thisAngleSlice)}
+          cx={powerScale(circleR) * Math.cos(thisAngleSlice)}
+          cy={powerScale(circleR) * Math.sin(thisAngleSlice)}
           r={r}
           fill={circleFill}
           stroke={circleStroke}
