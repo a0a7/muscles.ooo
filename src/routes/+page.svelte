@@ -296,7 +296,7 @@
             {:else}
             {#if p === 'home'}
                 <HomePage {activities} />
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-36">
                     <div class="flex flex-col items-center lg:ml-auto">
                         <h2 class="font-bold text-3xl">Export Processed Data</h2>
                         <div class="mt-6 flex gap-2">
@@ -317,7 +317,7 @@
                             }}><Download /> TSV</Button>
                             </div>
                         <p class="max-w-80 pt-6 text-center">Note: CSV & TSV Formats are less precise than JSON & YAML, and don't store data about workout sets & HR zones</p>
-                    </div>
+                    </div><!--
                     <div class="flex flex-col items-center">
                         <h2 class="font-bold text-3xl">Upload More Data</h2>
                         <form class="flex gap-1 max-w-sm mt-6" onsubmit={handleFileUpload}>
@@ -325,10 +325,10 @@
                             <Button type="submit" variant="outline" class="ml-4">Upload File</Button>
                         </form>
                         <p class="max-w-80 pt-6 text-center">You can upload another json file to update the list of activities</p>
-                    </div>
+                    </div>-->
                     <div class="flex flex-col items-center lg:mr-auto">
                         <h2 class="font-bold text-3xl">Delete Data & Clear Cache</h2>
-                        <Button variant="outline" class="ml-4 mt-6" onclick={() => {localStorage.removeItem('activities'); location.reload()}}>Remove Uploaded Data</Button>                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to get rid of existing activities or update old ones</p>
+                        <Button variant="outline" class="ml-4 mt-6" onclick={() => {localStorage.removeItem('activities'); location.reload()}}>Remove Uploaded Data</Button>                        <p class="max-w-80 pt-6 text-center">You can remove your data if you want to update your activities or if something isn't working right.</p>
                     </div>
                 </div>
             {:else if p === 'calendar'}
