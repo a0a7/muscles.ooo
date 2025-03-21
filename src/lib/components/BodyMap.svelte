@@ -42,7 +42,7 @@
     const getColor = (value: number, max: number) => {
         const ratio = (value / max) * 100;
         if (ratio <= 5) {           // Gray < 5%
-            return 'rgba(171, 171, 171, 0.5)';
+            return 'rgba(165, 171, 180, 0.5)';
         } else if (ratio <= 75) {   // Yellow (25%) -> Orange (75%)
             let g = (170 - Math.round(((ratio - 50) / 25) * (255 - 165))) * 0.8;
             return `rgba(255, ${Math.min(255, g)}, 0, 0.8)`;
@@ -87,16 +87,16 @@
         hoveredMuscle = null;
     };
 </script>
-<div id="bodyMapContent">
+<div id="bodyMapContent" class="pb-8">
 <div class="w-full items-center justify-center">
     <svg id="svgElement" data-name="" class="max-w-full max-h-full md:max-h-[50%] mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768.41 607.66">
         <defs>
           <style>
             .body {
-              fill: rgba(200, 200, 200, .5);
+              fill: rgba(180, 200, 220, .5);
             }
             :root.dark .body {
-              fill: rgba(50, 50, 50, .5);
+              fill: rgba(40, 50, 60, .4);
             }
           </style>
         </defs>
@@ -162,13 +162,9 @@
           <g id="Adductors_Abductors" role="button" tabindex="0"  data-name="Adductors/Abductors"  on:mouseover={(e) => handleMouseOver(e, "Hips")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Hips")} on:blur={handleMouseOut}>
             <g>
               <path class="hips" d="M134.6,227.81c3.8,6.94,18.39,12.84,25.99,17.37,4.61,7.73,7.11,16,14.24,20.62,1.83,1.45,1.31,1.85-.96,1.53-23.25-3.08-51.61-15.74-39.26-39.51ZM142.13,261.39c-3.31,13.94,1.45,30.63,6.19,43.68,12.89,13.16,27.78,32.18,28.71,57.81,2.24-33.54,17.11-60.24-8.92-81.34-4.81-3.91-20.94-21.78-25.98-20.15ZM129.17,249.1c-7.52,21.61-8.99,54.91-10.46,82.75,2.56-17.71,8.9-39.19,15.47-54.95,3.88-20.3,6.52-13.7-5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
-              <path class="hips" d="M142.13,261.39c-3.31,13.94,1.45,30.63,6.19,43.68,12.89,13.16,27.78,32.18,28.71,57.81,2.24-33.54,17.11-60.24-8.92-81.34-4.81-3.91-20.94-21.78-25.98-20.15ZM129.17,249.1c-7.52,21.61-8.99,54.91-10.46,82.75,2.56-17.71,8.9-39.19,15.47-54.95,3.88-20.3,6.52-13.7-5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
-              <path class="hips" d="M129.17,249.1c-7.52,21.61-8.99,54.91-10.46,82.75,2.56-17.71,8.9-39.19,15.47-54.95,3.88-20.3,6.52-13.7-5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
             </g>
             <g>
               <path class="hips" d="M245.05,227.81c-3.8,6.94-18.39,12.84-25.99,17.37-4.61,7.73-7.11,16-14.24,20.62-1.83,1.45-1.31,1.85.96,1.53,23.25-3.08,51.61-15.74,39.26-39.51ZM237.52,261.39c3.31,13.94-1.45,30.63-6.19,43.68-12.89,13.16-27.78,32.17-28.71,57.81-2.24-33.54-17.1-60.24,8.92-81.34,4.81-3.91,20.94-21.78,25.98-20.15ZM250.48,249.1c7.52,21.61,8.99,54.91,10.46,82.75-2.56-17.71-8.9-39.19-15.47-54.95-3.87-20.3-6.52-13.7,5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
-              <path class="hips" d="M237.52,261.39c3.31,13.94-1.45,30.63-6.19,43.68-12.89,13.16-27.78,32.17-28.71,57.81-2.24-33.54-17.1-60.24,8.92-81.34,4.81-3.91,20.94-21.78,25.98-20.15ZM250.48,249.1c7.52,21.61,8.99,54.91,10.46,82.75-2.56-17.71-8.9-39.19-15.47-54.95-3.87-20.3-6.52-13.7,5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
-              <path class="hips" d="M250.48,249.1c7.52,21.61,8.99,54.91,10.46,82.75-2.56-17.71-8.9-39.19-15.47-54.95-3.87-20.3-6.52-13.7,5.02-27.8Z" fill={getColor(muscleSets['HIPS'] || 0, maxActivation)}/>
             </g>
           </g>
           <g id="Abs" role="button" tabindex="0"  on:mouseover={(e) => handleMouseOver(e, "Abs")} on:mouseout={handleMouseOut} on:focus={(e) => handleMouseOver(e, "Abs")} on:blur={handleMouseOut}>
