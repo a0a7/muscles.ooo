@@ -10,10 +10,7 @@
     export let formatTick = (/** @type {any} */ d) => d;
     export let baseline = false;
     export let snapTicks = false;
-    /**
-	 * @type {number | ((arg0: any) => any) | undefined}
-	 */
-     export let ticks = undefined;
+    export let ticks = undefined;
     export let xTick = undefined;
     export let yTick = 16;
     export let dxTick = 0;
@@ -42,7 +39,7 @@
             typeof ticks === 'function' ?
                 // @ts-ignore
                 ticks($xScale.ticks()) :
-                    $xScale.ticks(ticks);
+                $xScale.ticks(ticks);
 
     // Add additional ticks for dividing lines
     $: if (isWeekday) {
@@ -57,11 +54,10 @@
             monthTicks.push(i * 2592000); // 2592000 seconds in a month (approx)
         }
         tickVals = monthTicks;
+    } else if (isVolume) {
+        tickVals = $xScale.ticks(ticks / 2); // Reduce the number of ticks for volume
     }
 
-    /**
-     * @param {number} i
-     */
     function textAnchor(i) {
         if (snapTicks === true) {
             if (i === 0) {
@@ -74,9 +70,6 @@
         return 'middle';
     }
 
-    /**
-     * @param {number} tick
-     */
     function formatVolumeTick(tick) {
         const metric = get(useMetric);
         return metric 
@@ -84,36 +77,24 @@
             : `${(tick / 453.592).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} lbs`;
     }
 
-    /**
-     * @param {number} tick
-     */
     function formatTimeTick(tick) {
         const hours = Math.floor(tick / 3600);
         const minutes = Math.floor((tick % 3600) / 60);
         return `${hours > 0 ? hours + 'h ' : ''}${minutes}m`;
     }
 
-    /**
-     * @param {number} tick
-     */
     function formatStartTimeTick(tick) {
         const hours = Math.floor(tick / 3600);
         const minutes = Math.floor((tick % 3600) / 60);
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
-    /**
-     * @param {number} tick
-     */
     function formatWeekdayTick(tick) {
         const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const dayIndex = Math.floor(tick / 86400);
         return days[dayIndex % 7];
     }
 
-    /**
-     * @param {number} tick
-     */
     function formatYearTick(tick) {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const monthIndex = Math.floor(tick / 2592000);
