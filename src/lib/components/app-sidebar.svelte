@@ -127,7 +127,7 @@
             </Sidebar.GroupContent>
         </Sidebar.Group>-->
     </Sidebar.Content>
-    <div class="bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800">
+    <div class="bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800 dark:bg-opacity-20">
         <div class="flex items-center justify-between space-x-2">
             <Label for="unit-switch">kg/m/km</Label>
             <Switch.Root
