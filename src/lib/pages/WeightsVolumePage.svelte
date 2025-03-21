@@ -236,8 +236,8 @@
 </script>
 
 <div class="max-w-[86.5%] px-6 lg:px-8 mx-auto">
-  <h2 class="text-3xl font-bold mx-auto mt-8 text-center">Relative Muscle Activation</h2>
-  <div class="mb-4 mt-8 w-full flex flex-col items-center justify-center gap-2">
+  <h2 class="text-3xl font-black mx-auto mt-6 text-center">Relative Muscle Activation</h2>
+  <div class="mb-4 mt-4 w-full flex flex-col items-center justify-center gap-2">
     
     <Label for="timeFilter">Filter by Time</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">

@@ -90,7 +90,7 @@
     duration: 'Duration',
     workingTime: 'Working Time',
     // dayTimeOfWeek: 'Day + Time of Week',
-    daysSinceStart: 'Days Since Start',
+    // daysSinceStart: 'Days Since Start',
     // dayOfYear: 'Day of Year'
   };
 
@@ -159,7 +159,7 @@
 </script>
 
 <div class="max-w-[86.5%] h-full px-6 lg:px-8 mx-auto items-center justify-center">
-  <h2 class="text-3xl font-bold mx-auto mt-8 text-center w-full">Beeswarm</h2>
+  <h2 class="text-3xl font-black mx-auto mt-8 text-center w-full">Lifting Beeswarm Charts</h2>
   <div class="mb-4 mt-8 w-full mx-auto flex flex-col items-center justify-center gap-2">
     <Label for="timeFilter">Filter by Time</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="timeFilter">
@@ -172,7 +172,7 @@
       {/each}
     </div>
   </div>
-  <div class="mb-4 py-8 max-w-full mx-auto flex flex-col items-center justify-center gap-2">
+  <div class="mb-4 py-4 max-w-full mx-auto flex flex-col items-center justify-center gap-2">
     <Label for="metricFilter">Metric</Label>
     <div class="flex space-x-2 max-w-[75vw] overflow-x-scroll md:overflow-x-auto" id="metricFilter">
       {#each Object.entries(metrics) as [key, label]}
@@ -202,7 +202,6 @@
             isTime={metricFilter === 'duration' || metricFilter === 'workingTime'}
             isStartTime={metricFilter === 'startTime'}
             isWeekday={metricFilter === 'dayTimeOfWeek'}
-            isYear={metricFilter === 'dayOfYear'}
             ticks={tickCount}
           />
           <Beeswarm
