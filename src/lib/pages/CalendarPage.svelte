@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { format, eachDayOfInterval, startOfWeek, endOfWeek, isSameDay, subWeeks, addDays, getDay, getYear, startOfYear, endOfYear, lastDayOfDecade } from 'date-fns';
+    import { Button } from "$lib/components/ui/button";
 
     export let activities: any[] = [];
 
@@ -13,6 +14,8 @@
 
     let showAllYears = false;
     let years: number[] = [];
+    let hoveredDate: Date | null = null;
+    let tooltipPosition = { x: 0, y: 0 };
 
     onMount(() => {
         years = Array.from(new Set(activities.map(a => getYear(new Date(a.startTime)))));
@@ -136,6 +139,25 @@
         });
         showAllYears = true;
     }
+
+    function handleMouseOver(event: MouseEvent, date: Date) {
+        hoveredDate = date;
+        tooltipPosition = {
+            x: event.clientX + 10,
+            y: event.clientY + 10
+        };
+    }
+
+    function handleMouseOut() {
+        hoveredDate = null;
+    }
+
+    function formatDuration(seconds: number): string {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        
+        return hours>0 ? `${hours}h ${minutes}m` : `${minutes}m`; 
+    }
 </script>
 
 <div class="pb-10">
@@ -165,7 +187,12 @@
                 <div class="mx-[1px] {week === past52Weeks[0] ? 'mt-auto' : ''}">
                     {#each week as date}
                         {@const dayActivities = activities.filter(a => isSameDay(new Date(a.startTime), date))}
-                        <div class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(getActivityType(dayActivities))} opacity-{getOpacity(getTotalTime(dayActivities))}" title="{format(date, 'yyyy-MM-dd')}"></div>
+                        <div 
+                            class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(getActivityType(dayActivities))} opacity-{getOpacity(getTotalTime(dayActivities))}" 
+                            title="{format(date, 'yyyy-MM-dd')}"
+                            on:mouseover={(e) => handleMouseOver(e, date)}
+                            on:mouseout={handleMouseOut}>
+                        </div>
                     {/each}
                 </div>
             {/each}
@@ -192,7 +219,12 @@
                             <div class="mx-[1px] {week === weeksByYear[year][0] ? 'mt-auto' : ''}">
                                 {#each week as date}
                                     {@const activity = heatmapDataByYear[year].find(d => isSameDay(d.date, date))}
-                                    <div class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(activity?.type)} opacity-{getOpacity(activity?.totalTime)}" title="{format(date, 'yyyy-MM-dd')}"></div>
+                                    <div 
+                                        class="w-[12px] h-[12px] my-[1px] rounded-[2px] shadow-slate-900/10 dark:shadow-slate-900/50 shadow-inner {getColor(activity?.type)} opacity-{getOpacity(activity?.totalTime)}" 
+                                        title="{format(date, 'yyyy-MM-dd')}"
+                                        on:mouseover={(e) => handleMouseOver(e, date)}
+                                        on:mouseout={handleMouseOut}>
+                                    </div>
                                 {/each}
                             </div>
                         {/each}
@@ -209,8 +241,29 @@
         {/each}
         {#if !showAllYears}
             <div class="flex justify-center pt-4">
-                <button class="bg-background hover:opacity-80 text-white px-4 py-2 rounded-xl" on:click={loadMoreYears}>Load More</button>
+                <Button 
+                    variant='outline'
+                    onclick={loadMoreYears}>
+                    Load More
+                </Button>
             </div>
         {/if}
     </div>
 </div>
+
+{#if hoveredDate}
+    <div
+        class="dark:invert fixed bg-white bg-opacity-90 p-2 rounded shadow-sm shadow-slate-400 dark:shadow-white z-50 text-md font-medium text-gray-800 whitespace-nowrap"
+        style="top: {tooltipPosition.y}px; left: {tooltipPosition.x}px;">
+        <h4 class="m-0 mb-1 font-bold">{hoveredDate.toLocaleDateString('en-US', {weekday: "long",year: "numeric",month: "long",day: "numeric",})}</h4>
+        {#each activities.filter(a => isSameDay(new Date(a.startTime), hoveredDate)) as activity}
+            <p class="m-0">
+                {#if activity.exerciseSets}
+                    <b>Strength</b> - <b>{activity.exerciseSets.length} sets</b><br>
+                {:else}
+                    <b>{activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}</b> - <b>{formatDuration(activity.time)}</b><br>
+                {/if} 
+            </p>
+        {/each}
+    </div>
+{/if}
