@@ -23,7 +23,7 @@
             <div>
                 <p class="font-bold">muscles.ooo</p>
                 <p>v0.1</p>
-                <p>by <a href="https://a0.ax">aaw</a></p>
+                <p><a href="https://github.com/a0a7">contact</a></p>
             </div>
             <div class="h-full pr-1">
                 <Button variant="outline" size="icon" onclick={toggleMode}>
