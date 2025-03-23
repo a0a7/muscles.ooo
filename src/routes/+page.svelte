@@ -93,9 +93,9 @@
             case 'list':
                 return 'All Exercises';
             case 'weights-volume':
-                return 'Muscle Activation Comparison';
+                return 'Muscle Breakdown';
             case 'weights-charts':
-                return 'Weightlifting Charts';
+                return 'Metric Distribution Charts';
             case 'weights-stats':
                 return 'Weightlifting Statistics Summary';
             case 'cycling-stats':

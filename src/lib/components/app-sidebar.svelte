@@ -21,9 +21,9 @@
     <Sidebar.Header>
         <div class="flex items-center justify-between ">
             <div>
-                <p class="font-bold">Stats for Garmin</p>
+                <p class="font-bold">muscles.ooo</p>
                 <p>v0.1</p>
-                <p>by <a href="https://a0.ax">lev</a></p>
+                <p>by <a href="https://a0.ax">aaw</a></p>
             </div>
             <div class="h-full pr-1">
                 <Button variant="outline" size="icon" onclick={toggleMode}>
@@ -82,16 +82,16 @@
                     <Sidebar.MenuItem>
                         <Sidebar.MenuButton isActive={false}>
                             {#snippet child({ props })}
-                                <a href="?p=weights-charts" {...props}>Charts</a>
+                                <a href="?p=weights-charts" {...props}>Metric Distributions</a>
                             {/snippet}
                         </Sidebar.MenuButton>
                     </Sidebar.MenuItem>
                     <Sidebar.MenuItem>
                         <Sidebar.MenuButton>
                             {#snippet child({ props })}
-                                <a href="?p=weights-volume" {...props}>Muscle Activation</a>
+                                <a href="?p=weights-volume" {...props}>Muscles</a>
                             {/snippet}
-                        </Sidebar.MenuButton>
+                        </Sidebar.MenuButton>   
                     </Sidebar.MenuItem>
                 </Sidebar.Menu>
             </Sidebar.GroupContent>

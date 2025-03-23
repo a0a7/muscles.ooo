@@ -140,7 +140,7 @@
   </script>
   
   <div class="max-w-[86.5%] px-6 lg:px-8 mx-auto">
-    <h2 class="text-3xl font-black mx-auto mt-6 text-center">Lifting Statistics</h2>
+    <h2 class="text-3xl font-black mx-auto mt-6 text-center">Weightlifting Statistics</h2>
     
     <div class="flex flex-wrap justify-center gap-2 mt-6">
       <Button 

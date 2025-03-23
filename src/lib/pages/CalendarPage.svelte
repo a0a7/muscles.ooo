@@ -165,7 +165,7 @@
         <div class="flex justify-center space-x-4 pt-4">
             <div class="flex items-center">
                 <div class="w-[12px] h-[12px] bg-sky-700 rounded-[2px] mr-2"></div>
-                <span>Lifting</span>
+                <span>Weightlifting</span>
             </div>
             <div class="flex items-center">
                 <div class="w-[12px] h-[12px] bg-[#fc4c02] rounded-[2px] mr-2"></div>
