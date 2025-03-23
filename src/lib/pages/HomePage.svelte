@@ -1,9 +1,8 @@
 <script lang="ts">
     export let activities: any[] = [];
 
-    let totalHours = activities.reduce((acc, activity) => acc + (activity.time || 0), 0) / 3600;
-
-    let totalActivities = activities.length;
+    $: totalHours = activities.reduce((acc, activity) => acc + (activity.time || 0), 0) / 3600;
+    $: totalActivities = activities.length;
 </script>
 
 <div class="text-center my-16 lg:my-32">
