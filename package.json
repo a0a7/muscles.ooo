@@ -47,6 +47,7 @@
 		"zod": "^3.24.1"
 	},
 	"dependencies": {
+		"@lucide/svelte": "^0.483.0",
 		"accurate-beeswarm-plot": "^1.0.12",
 		"d3-format": "^3.1.0",
 		"d3-sankey": "^0.12.3",
@@ -61,7 +62,9 @@
 		"openmeteo": "^1.1.4",
 		"papaparse": "^5.5.2",
 		"simple-statistics": "^7.8.7",
+		"svelte-headless-table": "^0.18.3",
 		"svelte-icons": "^2.1.0",
+		"svelte-radix": "^2.0.1",
 		"yaml": "^2.7.0"
 	}
 }

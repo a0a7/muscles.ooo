@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/svelte':
+        specifier: ^0.483.0
+        version: 0.483.0(svelte@5.23.1)
       accurate-beeswarm-plot:
         specifier: ^1.0.12
         version: 1.0.12
@@ -50,9 +53,15 @@ importers:
       simple-statistics:
         specifier: ^7.8.7
         version: 7.8.8
+      svelte-headless-table:
+        specifier: ^0.18.3
+        version: 0.18.3(svelte@5.23.1)
       svelte-icons:
         specifier: ^2.1.0
         version: 2.1.0
+      svelte-radix:
+        specifier: ^2.0.1
+        version: 2.0.1(svelte@5.23.1)
       yaml:
         specifier: ^2.7.0
         version: 2.7.0
@@ -685,6 +694,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@lucide/svelte@0.483.0':
+    resolution: {integrity: sha512-b3SbhMIgVJAj/rPa3go6uplTzaFkJzz91TSPO8I8gc2evtHOA2OgSmPYz0S+yEKFIWqLUZ4gika19ljV+tnmyQ==}
+    peerDependencies:
+      svelte: ^5
 
   '@melt-ui/svelte@0.76.2':
     resolution: {integrity: sha512-7SbOa11tXUS95T3fReL+dwDs5FyJtCEqrqG3inRziDws346SYLsxOQ6HmX+4BkIsQh1R8U3XNa+EMmdMt38lMA==}
@@ -2167,13 +2181,39 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
+  svelte-headless-table@0.18.3:
+    resolution: {integrity: sha512-1zVnqXW0dvn6ZceYa94k+ziK+w5Dj9nlWYTQGXBv2JhM0resj9w7CWpclZK1TJwAALfEeH4InPBPO87L5fr+nQ==}
+    peerDependencies:
+      svelte: ^4.0.0
+
   svelte-icons@2.1.0:
     resolution: {integrity: sha512-rHPQjweEc9fGSnvM0/4gA3pDHwyZyYsC5KhttCZRhSMJfLttJST5Uq0B16Czhw+HQ+HbSOk8kLigMlPs7gZtfg==}
+
+  svelte-keyed@2.0.0:
+    resolution: {integrity: sha512-7TeEn+QbJC2OJrHiuM0T8vMBkms3DNpTE+Ir+NtnVBnBMA78aL4f1ft9t0Hn/pBbD/TnIXi4YfjFRAgtN+DZ5g==}
+    peerDependencies:
+      svelte: ^4.0.0
+
+  svelte-radix@2.0.1:
+    resolution: {integrity: sha512-YrX44Dj+Rp6YZuPSjdmyd6P8QTkb2NXwySUCZYzjwkP6Cl3dZaTBPPeaSOutP3v3ycQ2XwyNOpyn4p0QcN+uYQ==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+    peerDependencies:
+      svelte: ^5.0.0
+
+  svelte-render@2.0.1:
+    resolution: {integrity: sha512-RpB0SurwXm4xhjvHHtjeqMmvd645FURb79GFOotScOSqnKK5vpqBgoBPGC0pp+E/eZgDSQ9rRAdn/+N4ys1mXQ==}
+    peerDependencies:
+      svelte: ^4.0.0
 
   svelte-sonner@0.3.28:
     resolution: {integrity: sha512-K3AmlySeFifF/cKgsYNv5uXqMVNln0NBAacOYgmkQStLa/UoU0LhfAACU6Gr+YYC8bOCHdVmFNoKuDbMEsppJg==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.1
+
+  svelte-subscribe@2.0.1:
+    resolution: {integrity: sha512-eKXIjLxB4C7eQWPqKEdxcGfNXm2g/qJ67zmEZK/GigCZMfrTR3m7DPY93R6MX+5uoqM1FRYxl8LZ1oy4URWi2A==}
+    peerDependencies:
+      svelte: ^4.0.0
 
   svelte-toolbelt@0.7.1:
     resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
@@ -2794,6 +2834,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@lucide/svelte@0.483.0(svelte@5.23.1)':
+    dependencies:
+      svelte: 5.23.1
 
   '@melt-ui/svelte@0.76.2(svelte@5.23.1)':
     dependencies:
@@ -4271,9 +4315,33 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
+  svelte-headless-table@0.18.3(svelte@5.23.1):
+    dependencies:
+      svelte: 5.23.1
+      svelte-keyed: 2.0.0(svelte@5.23.1)
+      svelte-render: 2.0.1(svelte@5.23.1)
+      svelte-subscribe: 2.0.1(svelte@5.23.1)
+
   svelte-icons@2.1.0: {}
 
+  svelte-keyed@2.0.0(svelte@5.23.1):
+    dependencies:
+      svelte: 5.23.1
+
+  svelte-radix@2.0.1(svelte@5.23.1):
+    dependencies:
+      svelte: 5.23.1
+
+  svelte-render@2.0.1(svelte@5.23.1):
+    dependencies:
+      svelte: 5.23.1
+      svelte-subscribe: 2.0.1(svelte@5.23.1)
+
   svelte-sonner@0.3.28(svelte@5.23.1):
+    dependencies:
+      svelte: 5.23.1
+
+  svelte-subscribe@2.0.1(svelte@5.23.1):
     dependencies:
       svelte: 5.23.1
 
