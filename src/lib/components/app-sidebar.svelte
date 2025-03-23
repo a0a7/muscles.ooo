@@ -21,9 +21,8 @@
     <Sidebar.Header>
         <div class="flex items-center justify-between ">
             <div>
-                <p class="font-bold">muscles.ooo</p>
-                <p>v0.1</p>
-                <p><a href="https://github.com/a0a7">contact</a></p>
+                <p><b>muscles.ooo</b> v0.1</p>
+                <p><a href="https://github.com/a0a7" target="_blank">hello who made this</a></p>
             </div>
             <div class="h-full pr-1">
                 <Button variant="outline" size="icon" onclick={toggleMode}>
