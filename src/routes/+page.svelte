@@ -10,7 +10,7 @@
     import ListPage from "$lib/pages/ListPage.svelte";
     import WeightsVolumePage from "$lib/pages/WeightsVolumePage.svelte";
     import WeightsStatsPage from "$lib/pages/WeightsStatsPage.svelte";
-    import CyclingStatsPage from "$lib/pages/CyclingStatsPage.svelte";
+    import CyclingStatsPage from "$lib/pages/CyclingChartsPage.svelte";
     import CyclingWeatherPage from "$lib/pages/CyclingWeatherPage.svelte";
     import CyclingMapPage from "$lib/pages/CyclingMapPage.svelte";
     import { Input } from "$lib/components/ui/input/index.js";
@@ -24,6 +24,8 @@
     import YAML from 'yaml';
     import { useMetric } from '../stores/useMetric';
 	import WeightsSummaryPage from '$lib/pages/WeightsSummaryPage.svelte';
+	import CyclingChartsPage from '$lib/pages/CyclingChartsPage.svelte';
+	import RunningChartsPage from '$lib/pages/RunningChartsPage.svelte';
 
     let p: string | null = $state(null);
     let file: File | null = null;
@@ -341,6 +343,12 @@
                     {volumeType}
                     {weightUnit}
                 />
+            {:else if p === 'progression'}
+                <WeightsProgressionPage
+                    {activities}
+                    {volumeType}
+                    {weightUnit}
+                />
             {:else if p === 'weights-volume'}
                 <WeightsVolumePage
                     {activities}
@@ -351,10 +359,14 @@
                 <WeightsStatsPage {activities} />
             {:else if p === 'cycling-stats'}
                 <CyclingStatsPage {activities} />
+            {:else if p === 'cycling-charts'}
+                <CyclingChartsPage {activities} {weightUnit}/>
             {:else if p === 'cycling-weather'}
                 <CyclingWeatherPage {activities} />
             {:else if p === 'cycling-map'}
                 <CyclingMapPage {activities} />
+            {:else if p === 'running-charts'}
+                <RunningChartsPage {activities} {weightUnit}/>
             {:else}
                 <p>Page not found</p>
             {/if}
