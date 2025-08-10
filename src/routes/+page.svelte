@@ -13,6 +13,7 @@
     import CyclingStatsPage from "$lib/pages/CyclingChartsPage.svelte";
     import CyclingWeatherPage from "$lib/pages/CyclingWeatherPage.svelte";
     import CyclingMapPage from "$lib/pages/CyclingMapPage.svelte";
+    import WeightsProgressionPage from "$lib/pages/WeightsProgressionPage.svelte";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import Button from '$lib/components/ui/button/button.svelte';
@@ -23,9 +24,9 @@
     import Papa from 'papaparse';
     import YAML from 'yaml';
     import { useMetric } from '../stores/useMetric';
-	import WeightsSummaryPage from '$lib/pages/WeightsSummaryPage.svelte';
-	import CyclingChartsPage from '$lib/pages/CyclingChartsPage.svelte';
-	import RunningChartsPage from '$lib/pages/RunningChartsPage.svelte';
+    import WeightsSummaryPage from '$lib/pages/WeightsSummaryPage.svelte';
+    import CyclingChartsPage from '$lib/pages/CyclingChartsPage.svelte';
+import RunningChartsPage from '$lib/pages/RunningChartsPage.svelte';
 
     let p: string | null = $state(null);
     let file: File | null = null;
@@ -106,6 +107,8 @@
                 return 'Cycling Weather';
             case 'cycling-map':
                 return 'Cycling Map';
+            case 'lift-progressions':
+                return 'Lift Progressions';
             default:
                 return page.charAt(0).toUpperCase() + page.slice(1);
         }
@@ -343,12 +346,8 @@
                     {volumeType}
                     {weightUnit}
                 />
-            {:else if p === 'progression'}
-                <WeightsProgressionPage
-                    {activities}
-                    {volumeType}
-                    {weightUnit}
-                />
+            {:else if p === 'weights-progression'}
+                <WeightsProgressionPage {activities} />
             {:else if p === 'weights-volume'}
                 <WeightsVolumePage
                     {activities}

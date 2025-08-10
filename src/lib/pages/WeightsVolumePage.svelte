@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import { format, subDays, subMonths, subYears, parseISO } from 'date-fns';
   import { Button } from "$lib/components/ui/button";
-	import Label from '$lib/components/ui/label/label.svelte';
+  import Label from '$lib/components/ui/label/label.svelte';
   import { LayerCake, Svg } from 'layercake';
   import * as Carousel from "$lib/components/ui/carousel/index.js";
   import Sankey from '$lib/components/charts/Sankey.svelte';
@@ -143,14 +143,14 @@
                                 muscleReps[muscle] = (muscleReps[muscle] || 0) + set.reps;
                                 musclePrimarySets[muscle] = (musclePrimarySets[muscle] || 0) + 1;
                                 musclePrimaryReps[muscle] = (musclePrimaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
+                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + (set.weight * set.reps) / 1000;
                             });
                             muscles.secondaryMuscles.forEach((muscle: string) => {
                                 muscleSets[muscle] = (muscleSets[muscle] || 0) + 0.5;
                                 muscleReps[muscle] = (muscleReps[muscle] || 0) + (set.reps * 0.5);
                                 muscleSecondarySets[muscle] = (muscleSecondarySets[muscle] || 0) + 1;
                                 muscleSecondaryReps[muscle] = (muscleSecondaryReps[muscle] || 0) + set.reps;
-                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + set.weight * set.reps;
+                                muscleVolume[muscle] = (muscleVolume[muscle] || 0) + (set.weight * set.reps) / 1000;
                             });
                           } else {
                             return;
@@ -181,7 +181,9 @@
     }, {} as Record<string, number>);
   }
 
+  // Divide all values by 1000 for display (axis and radar chart)
   $: transformedData = transformData(simplifiedMuscleGroupsData);
+  $: transformedDataInThousands = Object.fromEntries(Object.entries(transformedData).map(([k, v]) => [k, v / 1_000]));
 
   function createSankeyDataset(data: Record<string, number>) {
     const nodes = [
@@ -236,7 +238,7 @@
 </script>
 
 <div class="max-w-[80%] px-6 lg:px-8 mx-auto">
-  <h2 class="text-3xl font-black mx-auto mt-6 text-center">Relative Muscle Activation</h2>
+  <h2 class="text-3xl font-black mx-auto mt-6 text-center">Relative Muscle Activation (Volume in Thousands)</h2>
   <div class="mb-4 mt-4 w-full flex flex-col items-center justify-center gap-2">
     
     <Label for="timeFilter">Filter by Time</Label>
@@ -263,7 +265,7 @@
         </div>
       </Carousel.Item>
       <Carousel.Item class="">
-        <h3 class="text-center text-xl font-bold">Total Sets</h3>
+        <h3 class="text-center text-xl font-bold">Total Sets (Volume in Thousands)</h3>
         <div class="flex flex-row justify-center items-center pb-8">
           {#each Object.entries(transformedData) as [name, sets], index}
             <p class="mx-3 inline text-lg text-center leading-5">
@@ -276,10 +278,10 @@
             padding={{ top: 60, right: 0, bottom: 0, left: 0 }}
             x={broadMuscles}
             xRange={({ height }: {height: number}) => [0, height / 2]}
-            data={[transformedData]}
+            data={[transformedDataInThousands]}
           >
             <Svg>
-              <AxisRadial />
+              <AxisRadial tickFormat={d => d.toLocaleString(undefined, { maximumFractionDigits: 1 })} />
               <Radar />
             </Svg>
           </LayerCake>
